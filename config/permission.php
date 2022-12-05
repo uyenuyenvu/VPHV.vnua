@@ -63,124 +63,69 @@ return [
 
     [
         'code' => 'department-index',
-        'name' => 'Xem danh sách bộ môn',
+        'name' => 'Xem danh sách phòng ban',
         'group_code' => 'department',
-        'description' => 'Có quyền xem danh sách bộ môn'
+        'description' => 'Có quyền xem danh sách phòng ban'
     ],
     [
         'code' => 'department-create',
-        'name' => 'Tạo mới bộ môn',
+        'name' => 'Tạo mới phòng ban',
         'group_code' => 'department',
-        'description' => 'Có quyền tạo mới bộ môn'
+        'description' => 'Có quyền tạo mới phòng ban'
     ],
     [
         'code' => 'department-update',
-        'name' => 'Cập nhật bộ môn',
+        'name' => 'Cập nhật phòng ban',
         'group_code' => 'department',
-        'description' => 'Có quyền cập nhật bộ môn'
+        'description' => 'Có quyền cập nhật phòng ban'
     ],
     [
         'code' => 'department-delete',
-        'name' => 'Xoá bộ môn',
+        'name' => 'Xoá phòng ban',
         'group_code' => 'department',
-        'description' => 'Có quyền xóa bộ môn'
-    ],
-    [
-        'code' => 'student-index',
-        'name' => 'Xem toàn bộ danh sách sinh viên',
-        'group_code' => 'student',
-        'description' => 'Có quyền xem danh sách sinh viên'
-    ],
-    [
-        'code' => 'student-create',
-        'name' => 'Tạo mới sinh viên',
-        'group_code' => 'student',
-        'description' => 'Có quyền tạo mới sinh viên'
-    ],
-    [
-        'code' => 'student-update',
-        'name' => 'Cập nhật thông sinh viên',
-        'group_code' => 'student',
-        'description' => 'Có quyền cập nhật thông tin sinh viên'
-    ],
-    [
-        'code' => 'student-delete',
-        'name' => 'Xoá sinh viên',
-        'group_code' => 'student',
-        'description' => 'Có quyền xóa sinh viên'
+        'description' => 'Có quyền xóa phòng ban'
     ],
 
     [
-        'code' => 'class-index',
-        'name' => 'Xem toàn bộ danh sách lớp',
-        'group_code' => 'class',
-        'description' => 'Có quyền xem danh sách lớp'
+        'code' => 'location-index',
+        'name' => 'Xem toàn bộ danh sách địa điểm',
+        'group_code' => 'location',
+        'description' => 'Có quyền xem danh sách địa điểm'
     ],
     [
-        'code' => 'class-create',
-        'name' => 'Tạo mới lớp',
-        'group_code' => 'class',
-        'description' => 'Có quyền tạo mới lớp'
+        'code' => 'location-create',
+        'name' => 'Tạo mới địa điểm',
+        'group_code' => 'location',
+        'description' => 'Có quyền tạo mới địa điểm'
     ],
     [
-        'code' => 'class-update',
-        'name' => 'Cập nhật thông tin lớp',
-        'group_code' => 'class',
-        'description' => 'Có quyền cập nhật thông tin lớp'
+        'code' => 'location-update',
+        'name' => 'Cập nhật thông tin địa điểm',
+        'group_code' => 'location',
+        'description' => 'Có quyền cập nhật thông tin địa điểm'
     ],
     [
-        'code' => 'class-delete',
-        'name' => 'Xoá lớp',
-        'group_code' => 'class',
-        'description' => 'Có quyền xóa lớp'
+        'code' => 'location-delete',
+        'name' => 'Xoá địa điểm',
+        'group_code' => 'location',
+        'description' => 'Có quyền xóa địa điểm'
     ],
     [
-        'code' => 'department-index',
-        'name' => 'Xem toàn bộ danh sách bộ môn',
-        'group_code' => 'department',
-        'description' => 'Có quyền xem danh sách bộ môn'
+        'code' => 'schedule-index',
+        'name' => 'xem lịch của phòng ban mình',
+        'group_code' => 'schedule',
+        'description' => 'Có quyền xem lịch công tác của phòng ban mình'
     ],
     [
-        'code' => 'department-create',
-        'name' => 'Tạo mới bộ môn',
-        'group_code' => 'department',
-        'description' => 'Có quyền tạo mới bộ môn'
+        'code' => 'schedule-index-all',
+        'name' => 'xem lịch của tất cả phòng ban',
+        'group_code' => 'schedule',
+        'description' => 'Có quyền xem lịch công tác của tất cả các phòng ban'
     ],
     [
-        'code' => 'department-update',
-        'name' => 'Cập nhật thông tin bộ môn',
-        'group_code' => 'department',
-        'description' => 'Có quyền cập nhật thông tin bộ môn'
-    ],
-    [
-        'code' => 'department-delete',
-        'name' => 'Xoá bộ môn',
-        'group_code' => 'department',
-        'description' => 'Có quyền xóa bộ môn'
-    ],
-
-    [
-        'code' => 'report-index',
-        'name' => 'Xem toàn bộ danh sách báo cáo phản ánh',
-        'group_code' => 'report',
-        'description' => 'Có quyền xem danh sách báo cáo phản ánh'
-    ],
-    [
-        'code' => 'report-create',
-        'name' => 'Tạo mới báo cáo phản ánh',
-        'group_code' => 'report',
-        'description' => 'Có quyền tạo mới báo cáo phản ánh'
-    ],
-    [
-        'code' => 'report-update',
-        'name' => 'Cập nhật thông tin báo cáo phản ánh',
-        'group_code' => 'report',
-        'description' => 'Có quyền cập nhật thông tin báo cáo phản ánh'
-    ],
-    [
-        'code' => 'report-delete',
-        'name' => 'Xoá báo cáo phản ánh',
-        'group_code' => 'report',
-        'description' => 'Có quyền xóa báo cáo phản ánh'
+        'code' => 'schedule-index-all',
+        'name' => 'xem lịch của tất cả phòng ban',
+        'group_code' => 'schedule',
+        'description' => 'Có quyền xem lịch công tác của tất cả các phòng ban'
     ],
 ];

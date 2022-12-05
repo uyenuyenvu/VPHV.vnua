@@ -136,16 +136,16 @@
                                 </div>
                                 <div class="col q-px-sm">
                                     <div>
-                                        <label for="name" class="text-bold">Giảng viên </label>
-                                        <q-toggle v-model="is_teacher"/>
+                                        <label for="name" class="text-bold">Trưởng phòng ban </label>
+                                        <q-toggle v-model="is_leader"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div v-if="is_teacher" class="form-group row q-gutter-md q-mt-sm">
+                        <div v-if="is_leader" class="form-group row q-gutter-md q-mt-sm">
                             <div class="col" style="max-height: 63px">
                                 <label for="name" class="text-bold"
-                                >Bộ môn <span class="required">*</span></label
+                                >Phòng ban<span class="required">*</span></label
                                 >
                                 <div>
                                     <q-select
@@ -162,21 +162,6 @@
                                         :rules="rule.department_id"
                                     />
                                 </div>
-                            </div>
-                            <div class="col">
-                                <label for="teacher_code" class="text-bold"
-                                >Mã giảng viên <span class="required">*</span></label
-                                >
-                                <q-input
-                                    outlined
-                                    dense
-                                    v-model="teacher_code"
-                                    id="teacher_code"
-                                    :ref="refInput.teacher_code"
-                                    :rules="rule.teacher_code"
-                                    :error-message="getValidationErrors('teacher_code')"
-                                    :error="hasValidationErrors('teacher_code')"
-                                />
                             </div>
                         </div>
                     </q-card>
@@ -263,9 +248,8 @@ export default defineComponent({
             phone: ref<string>(""),
             email: ref<string>(""),
             is_super_admin: ref(false),
-            is_teacher: ref(false),
+            is_leader: ref(false),
             department_id: ref<number>(),
-            teacher_code: ref<string>(""),
             role_id: ref<number>(),
         };
 
@@ -280,7 +264,6 @@ export default defineComponent({
             phone: ref<any>(null),
             email: ref<any>(null),
             department_id: ref<any>(null),
-            teacher_code: ref<any>(null),
             role_id: ref<any>(null),
         };
 
@@ -315,12 +298,7 @@ export default defineComponent({
             ],
             role_id: [(val: any) => val || "Trường nhóm quyền không được bỏ trống!"],
             department_id: [
-                (val: any) => val || "Trường bộ môn không được bỏ trống!",
-            ],
-            teacher_code: [
-                (val: any) =>
-                    (val && val.length > 0) ||
-                    "Trường mã giảng viên không được bỏ trống!",
+                (val: any) => val || "Trường phòng ban không được bỏ trống!",
             ],
         };
 
@@ -328,7 +306,7 @@ export default defineComponent({
 
         const ruleSelect = (val: any) => {
             if (val === null) {
-                return "Trường bộ môn không được bỏ trống!";
+                return "Trường phòng ban không được bỏ trống!";
             }
         };
 
@@ -341,7 +319,6 @@ export default defineComponent({
         const handleSave = (): void => {
             if (isValidate()) {
                 const data = JSON.parse(JSON.stringify(payload));
-                data.teacher_code = data.is_teacher ? data.teacher_code : null;
                 if (idUser.value) {
                     api.updateUser(data, idUser.value).then(res => {
                         if (res) {
@@ -392,9 +369,9 @@ export default defineComponent({
         const isValidate = (): boolean => {
             let nameInput: string = "";
             let check = true;
-            const listInput: any = user.is_teacher.value
+            const listInput: any = user.is_leader.value
                 ? {...refInput}
-                : {...refInput, department_id: null, teacher_code: null}
+                : {...refInput, department_id: null}
             if (idUser.value) delete listInput.password
             for (nameInput in listInput) {
                 listInput[nameInput]?.value?.validate();
@@ -454,7 +431,7 @@ export default defineComponent({
             api.getUser<IUserResult>(id).then(res => {
                 const data = _.get(res, 'data.data.user', '')
                 for (const key in user) {
-                    if (['is_teacher', 'is_super_admin'].includes(key))
+                    if (['is_leader', 'is_super_admin'].includes(key))
                         user[key].value = data[key] ? true : false
                     else user[key].value = data[key]
                 }

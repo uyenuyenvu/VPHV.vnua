@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('departments', function (Blueprint $table) {
-            $table->id();
-            $table->text('name')->comment('tên phòng ban');
-            $table->timestamps();
+        Schema::table('departments', function (Blueprint $table) {
+            if (!Schema::hasColumn('departments','user_id')) {
+                $table->bigInteger('user_id')->nullable()->comment('id lãnh đạo quản lý bộ môn');
+            }
         });
     }
 
@@ -27,6 +27,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('departments');
+        Schema::table('departments', function (Blueprint $table) {
+            //
+        });
     }
 };

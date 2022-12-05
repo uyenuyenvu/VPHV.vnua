@@ -17,6 +17,7 @@ class Department extends Model
         'name',
         'department_code',
         'created_by',
+        'user_id',
         'updated_by',
     ];
 
@@ -27,6 +28,11 @@ class Department extends Model
     public function createBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function leader(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function updateBy(): BelongsTo

@@ -35,21 +35,6 @@
                   <q-btn label="Đăng nhập" @click="handleLogin" icon-right="fa-solid fa-right-to-bracket" type="button"
                          color="primary"></q-btn>
                 </div>
-                <div>
-                  <router-link class="textLink" :to='{ name: "Register" }'>Đăng ký</router-link>
-                  nếu bạn chưa có tài khoản ?
-                </div>
-                <div class="separator">hoặc</div>
-                <div class="social-card">
-                  <div class="microsoft social-btn q-btn text-white">
-                    <span><q-icon class="social-icon" name="fa-brands fa-windows" size="md"/><span class="social-text">Đăng nhập với tài khoản Microsoft</span></span>
-                  </div>
-
-                  <div class="google social-btn q-btn text-white" @click="getUrlSocial('google')">
-                    <span><q-icon class="social-icon" name="fa-brands fa-google-plus-g" size="md"/><span
-                        class="social-text">Đăng nhập với tài khoản Google</span></span>
-                  </div>
-                </div>
               </form>
             </div>
             <div class="col">

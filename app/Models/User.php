@@ -29,8 +29,7 @@ class User extends Authenticatable implements JWTSubject
         'role_id',
         'department_id',
         'is_super_admin',
-        'is_teacher',
-        'teacher_code',
+        'is_leader',
         'phone',
     ];
 
@@ -80,7 +79,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function socials(): MorphMany
     {
-        return $this->morphMany(Social::class,'socialable');
+        return $this->morphMany(Social::class, 'socialable');
     }
 
     public function department(): BelongsTo

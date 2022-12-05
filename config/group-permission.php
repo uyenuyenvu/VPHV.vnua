@@ -17,14 +17,19 @@ return [
         'description' => 'Quản lý toàn bộ chức năng liên quan đến vai trò'
     ],
     [
-        'name' => 'Quản lý bộ môn',
+        'name' => 'Quản lý phòng ban',
         'code' => 'department',
-        'description' => 'Quản lý toàn bộ chức năng liên quan đến bộ môn'
+        'description' => 'Quản lý toàn bộ chức năng liên quan đến phòng ban'
     ],
 
     [
-        'name' => 'Quản lý báo cáo',
-        'code' => 'report',
-        'description' => 'Quản lý toàn bộ chức năng liên quan đến báo cáo'
+        'name' => 'Quản lý Địa điểm',
+        'code' => 'location',
+        'description' => 'Quản lý toàn bộ chức năng liên quan đến địa điểm'
+    ],
+    [
+        'name' => 'Quản lý lịch trình',
+        'code' => 'schedule',
+        'description' => 'Quản lý toàn bộ chức năng liên quan đến lịch công tác'
     ],
 ];

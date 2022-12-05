@@ -32,10 +32,7 @@ class StoreUserRequest extends BaseRequest
             'email' => 'required|unique:users',
             'password' => 'required',
             'full_name' => 'required',
-            'user_name' => 'required|unique:users',
-            'teacher_code' => [
-                new TeacherUniqueRule()
-            ]
+            'user_name' => 'required|unique:users'
         ];
     }
 
@@ -45,7 +42,6 @@ class StoreUserRequest extends BaseRequest
             'password' => 'mật khẩu',
             'user_name' => 'tên tài khoản',
             'full_name' => 'họ và tên',
-            'teacher_code' => 'Mã giảng viên'
         ];
     }
 }

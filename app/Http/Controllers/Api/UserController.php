@@ -8,6 +8,7 @@ use App\Http\Requests\User\DeleteUserRequest;
 use App\Http\Requests\User\ResetPasswordRequest;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Models\Department;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\JsonResponse;
@@ -65,6 +66,13 @@ class UserController extends Controller
                 'created_by' => $authId,
                 'updated_by' => $authId
             ]));
+            if ($user && $data['is_leader']){
+                $department = Department::find($user->department_id);
+                if ($department){
+                    $department->user_id = $user->id;
+                    $department->save();
+                }
+            }
             return $this->responseSuccess(['user' => $user]);
 
         } catch (\Exception $exception) {

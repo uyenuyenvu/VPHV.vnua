@@ -82,7 +82,7 @@
             <th class="text-center" width="5%">STT</th>
             <th class="text-left">Mã lớp</th>
             <th class="text-left">Tên lớp</th>
-            <th class="text-left">Bộ môn</th>
+            <th class="text-left">Phòng ban</th>
             <th class="text-left">Giáo viên</th>
             <th class="text-center">Ngày tạo</th>
             <th class="text-center">Tác vụ</th>
@@ -107,7 +107,7 @@
                     {{ getValueLodash(classItem, 'name', '') }}
                   </span>
               </td>
-              <td class="text-left"> {{ getValueLodash(classItem.department, 'name', 'Không có bộ môn') }}</td>
+              <td class="text-left"> {{ getValueLodash(classItem.department, 'name', 'Không có phòng ban') }}</td>
               <td class="text-left"> {{ getValueLodash(classItem, 'teacher.full_name', 'Không có giáo viên') }}</td>
               <td class="text-center">{{ handleFormatDate(getValueLodash(classItem, 'created_at', '')) }}</td>
               <td class="text-center">
@@ -117,8 +117,8 @@
                     <q-list style="min-width: 100px">
                       <q-item clickable v-close-popup
                               @click="redirectRouter('ClassesDetail', {id: getValueLodash(classItem, 'id', 0)})">
-                        <q-item-section>  
-                          
+                        <q-item-section>
+
                                                     <span><q-icon name="fa-solid fa-eye" class="q-mr-sm"
                                                                   size="xs"></q-icon>Xem chi tiết</span>
                         </q-item-section>
@@ -135,7 +135,7 @@
                                                 <span><q-icon name="fa-solid fa-trash" class="q-mr-sm"
                                                               size="xs"></q-icon>Xoá</span>
                       </q-item>
-                      
+
                     </q-list>
                   </q-menu>
                 </div>
@@ -218,7 +218,7 @@ export default defineComponent({
     const dialogDeleteSelect = ref<boolean>(false)
     const roleId = ref<string>('')
     const classes = ref<Array<any>>([])
-    
+
     const classIds = ref<Array<string>>([])
 
     const checkboxArray = ref<Array<string>>([])
@@ -267,7 +267,7 @@ export default defineComponent({
         console.log("aaaaaaaaaaa "+classes);
         page.value.currentPage = _.get(res, 'data.data.class.current_page', 1)
         page.value.total = _.get(res, 'data.data.class.last_page', 0)
-        page.value.perPage = _.get(res, 'data.data.class.per_page', 0)        
+        page.value.perPage = _.get(res, 'data.data.class.per_page', 0)
       }).catch(() => {
         $q.notify({
           icon: 'report_problem',

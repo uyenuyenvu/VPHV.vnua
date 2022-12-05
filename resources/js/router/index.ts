@@ -141,6 +141,18 @@ const routeAdmin: Array<RouteRecordRaw> = [
         ]
     },
     {
+        path: 'locations',
+        meta: {isAuthenticated: true},
+        children: [
+            {
+                path: '',
+                name: 'Location',
+                component: () => import('../pages/Location/LocationIndex.vue'),
+                meta: {isAuthenticated: true},
+            },
+        ]
+    },
+    {
         path: 'users',
         meta: {isAuthenticated: true},
         children: [

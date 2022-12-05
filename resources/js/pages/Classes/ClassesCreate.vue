@@ -22,7 +22,7 @@
                                      :error-message="getValidationErrors('name')" :error="hasValidationErrors('name')"/>
                         </div>
                         <div class="form-group">
-                            <label for="department" class="text-bold">Bộ môn</label>
+                            <label for="department" class="text-bold">Phòng ban</label>
                             <div class="q-gutter-md">
                                 <q-select
                                     emit-value

@@ -24,18 +24,40 @@
           </div>
         </q-toolbar-title>
         <q-space/>
-        <div class="q-gutter-sm row items-center no-wrap">
+        <div class="q-gutter-sm row items-center no-wrap" v-if="auth.full_name">
           <q-btn round flat>
             <q-avatar size="26px">
               <img src="https://cdn.quasar.dev/img/avatar4.jpg">
             </q-avatar>
-            <q-menu style="max-width: 200px; right: 20px; left: auto;">
+            <q-menu style="max-width: 300px!important; right: 20px; left: auto!important;">
               <div class="row no-wrap q-pa-md">
                 <div class="column items-center">
-                  <div class="text-subtitle1 q-mt-md q-mb-xs">{{ auth.full_name }}</div>
+                  <div class="setting-div text-subtitle1 q-mt-md q-mb-xs">{{ auth.full_name }}</div>
                   <div class="setting-div">
-                    <q-icon color="grey" name="fa-solid fa-gear"/>
-                    <span class="text-subtitle1 q-mt-md q-mb-xs">Cài đặt</span>
+                    <span style="margin-bottom: 10px"><q-icon color="grey" name="fa-solid fa-gear"  style="margin-right: 20px"/>Cài đặt</span>
+                    <div class="item-menu-right">
+                    <router-link class="textLink" :to='{ name: "Role" }'
+                      style="text-decoration: none; color: black;text-transform: capitalize; margin-right: 5px;">
+                        <q-icon color="grey" name="fa-solid fa-pen-ruler" style="margin-right: 10px; margin-left: 20px"/>Cài đặt quyền hạn</router-link>
+                    </div>
+                  </div>
+                  <div class="setting-div">
+                    <span style="margin-bottom: 10px"><q-icon color="grey" name="fa-solid fa-bars-progress"  style="margin-right: 20px"/>Quản lý</span>
+                    <div class="item-menu-right">
+                    <router-link class="textLink" :to='{ name: "User" }'
+                      style="text-decoration: none; color: black;text-transform: capitalize; margin-right: 5px;">
+                        <q-icon color="grey" name="fa-solid fa-user" style="margin-right: 10px; margin-left: 20px"/>Người dùng</router-link>
+                    </div>
+                    <div class="item-menu-right">
+                    <router-link class="textLink" :to='{ name: "Department" }'
+                      style="text-decoration: none; color: black;text-transform: capitalize; margin-right: 5px;">
+                        <q-icon color="grey" name="fa-solid fa-building-user" style="margin-right: 10px; margin-left: 20px"/>Phòng ban</router-link>
+                    </div>
+                    <div class="item-menu-right">
+                    <router-link class="textLink" :to='{ name: "Location" }'
+                      style="text-decoration: none; color: black;text-transform: capitalize; margin-right: 5px;">
+                        <q-icon color="grey" name="fa-solid fa-location-dot" style="margin-right: 10px; margin-left: 20px"/>Địa điểm</router-link>
+                    </div>
                   </div>
                   <q-btn
                       color="primary"
@@ -48,6 +70,12 @@
                 </div>
               </div>
             </q-menu>
+          </q-btn>
+        </div>
+        <div class="q-gutter-sm row items-center no-wrap" v-else>
+          <q-btn flat>
+            <router-link class="textLink" :to='{ name: "Login" }'
+            style="text-decoration: none; color: white; font-weight:bold;text-transform: capitalize; margin-right: 5px">Đăng nhập</router-link>
           </q-btn>
         </div>
       </q-toolbar>
@@ -99,11 +127,20 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref} from 'vue'
+import {computed, defineComponent, onMounted, ref} from 'vue'
 import {fabYoutube} from '@quasar/extras/fontawesome-v6'
 import {useRouter} from "vue-router/dist/vue-router";
 import {useStore} from "vuex";
 import {AuthActionTypes} from "../store/modules/auth/actions-type";
+import {permissionHelper} from "../utils/permissionHelper";
+import {IDepartmentResult} from "../models/IDepartmentResult";
+import {IPayload} from "../models/IPage";
+import api from "../api";
+import IPaginate from "../models/IPaginate";
+import _ from "lodash";
+import {HomeMutationTypes} from "../store/modules/home/mutation-types";
+import eventBus from "../utils/eventBus";
+import {useQuasar} from "quasar";
 
 export default defineComponent({
   name: 'AppLayout',
@@ -112,9 +149,38 @@ export default defineComponent({
     const store = useStore()
     const leftDrawerOpen = ref(false)
     const router = useRouter()
+      const departments = ref<Array<IDepartmentResult>>([]);
+      const loadingDepartments = ref<boolean>(false);
+      const $q = useQuasar();
+      const {checkPermission} = permissionHelper()
 
     const auth = store.getters["auth/getAuthUser"]
+      const getListDepartment = (): void => {
+          loadingDepartments.value = true;
+          const payload: IPayload = {
+              page: 1,
+          };
 
+          api
+              .getDepartments<IPaginate<IDepartmentResult[]>>(payload)
+              .then((res) => {
+                  departments.value = _.get(res, "data.data.department.data");
+                })
+              .catch(() => {
+                  generateNotify("Không tải được danh sách phòng ban")
+              })
+              .finally(() => (loadingDepartments.value = false));
+      };
+      const generateNotify = (message: string, isSuccess=false) => {
+          isSuccess ? $q.notify({icon: "check",
+                  message: message,
+                  color: "positive",
+                  position: "top-right",}) :
+              $q.notify({ icon: "report_problem",
+                  message: message,
+                  color: "negative",
+                  position: "top-right"})
+      }
     const logout = (): void => {
       store.dispatch(`auth/${AuthActionTypes.LOGOUT_ACTION}`)
     }
@@ -131,7 +197,10 @@ export default defineComponent({
       return store.state.home.title
     })
 
+      onMounted(() => {
+          getListDepartment();
 
+      });
     return {
       fabYoutube,
       auth,
@@ -141,9 +210,11 @@ export default defineComponent({
       toggleLeftDrawer,
       redirectRouteName,
 
+        departments,
+        loadingDepartments,
       links1: [
         {icon: 'fa-solid fa-home', text: 'Bảng điều khiển', routeName: 'Home'},
-        {icon: 'fa-solid fa-building-user', text: 'Quản lý bộ môn', routeName: 'Department'},
+        {icon: 'fa-solid fa-building-user', text: 'Quản lý phòng ban', routeName: 'Department'},
         {icon: 'fa-solid fa-users', text: 'Quản lý lớp học', routeName: 'Classes'},
       ],
 
@@ -226,5 +297,15 @@ export default defineComponent({
   border-bottom: 1px solid darkgray;
   margin-bottom: 20px;
   padding-bottom: 10px;
+}
+.item-menu-right{
+    padding: 10px 20px 10px 0;
+    margin-right: 10px;
+    a{
+        white-space: nowrap;
+    }
+    &:hover{
+        background-color: #ebf3ff;
+    }
 }
 </style>

@@ -23,7 +23,7 @@ class DepartmentController extends Controller
     public function index(Request $request): JsonResponse
     {
         $data = $request->all();
-        $relationships = ['createBy', 'updateBy'];
+        $relationships = ['createBy', 'updateBy','leader'];
         $columns = ['*'];
         $paginate = $data['limit'] ?? config('constants.limit_of_paginate', 10);
         $condition = [];
