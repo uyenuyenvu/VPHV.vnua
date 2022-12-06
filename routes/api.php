@@ -69,8 +69,6 @@ Route::group(['middleware' => ['jwt.auth', 'auth.admin']], function () {
     });
 
     Route::prefix('departments')->group(function () {
-        Route::get('/', [DepartmentController::class, 'index'])->middleware('permission:department-index');
-        Route::get('/all', [DepartmentController::class, 'getAll'])->middleware('permission:department-index');
         Route::post('/', [DepartmentController::class, 'store'])->middleware('permission:department-create');
         Route::put('/{id}', [DepartmentController::class, 'update'])->middleware('permission:department-update');
         Route::delete('/delete-selected', [DepartmentController::class, 'deleteSelected'])->middleware('permission:department-delete');
@@ -134,3 +132,5 @@ Route::group(['prefix' => 'student'], function () {
         });
     });
 });
+Route::get('/', [DepartmentController::class, 'index']);
+Route::get('/all', [DepartmentController::class, 'getAll']);

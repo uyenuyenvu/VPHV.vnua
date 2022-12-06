@@ -4,12 +4,12 @@ import { store } from "../store"
 const routeSchedule: Array<RouteRecordRaw> = [
 
     {
-        path: '/schedule',
+        path: '/',
         name: 'AcademySchedule',
         component: () => import('../pages/Academy.vue')
     },
     {
-        path: '/schedule/item-department/:id',
+        path: '/item-department/:id',
         name: 'DepartmentSchedule',
         component: () => import('../pages/Department.vue')
     },

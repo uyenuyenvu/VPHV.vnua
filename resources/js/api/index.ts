@@ -29,7 +29,12 @@ apiAxios.interceptors.request.use(config => {
 apiAxios.interceptors.response.use(undefined, (error) => {
     if (error) {
         const originalRequest = error.config;
-        if (error.response.status === 401 && !originalRequest._retry && router.currentRoute.value.name !== 'Login') {
+        if (error.response.status === 401 &&
+            !originalRequest._retry &&
+            router.currentRoute.value.name !== 'Login' &&
+            router.currentRoute.value.name !== 'DepartmentSchedule' &&
+            router.currentRoute.value.name !== 'AcademySchedule'
+        ) {
             store.commit(`auth/${AuthMutationTypes.SET_LOGIN_STATUS}`, false)
             store.commit(`auth/${AuthMutationTypes.SET_AUTH_USER}`, {})
             store.commit(`auth/${AuthMutationTypes.SET_ACCESS_TOKEN}`, '')
