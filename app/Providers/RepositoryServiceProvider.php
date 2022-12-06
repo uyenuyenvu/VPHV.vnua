@@ -11,6 +11,8 @@ use App\Repositories\Category\CategoryRepository;
 use App\Repositories\Category\CategoryRepositoryInterface;
 use App\Repositories\Department\DepartmentRepository;
 use App\Repositories\Department\DepartmentRepositoryInterface;
+use App\Repositories\Location\LocationRepository;
+use App\Repositories\Location\LocationRepositoryInterface;
 use App\Repositories\Family\FamilyRepository;
 use App\Repositories\Family\FamilyRepositoryInterface;
 use App\Repositories\GeneralClass\GeneralClassRepository;
@@ -67,6 +69,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(StudentRepositoryInterface::class, StudentRepository::class);
         $this->app->bind(FamilyRepositoryInterface::class, FamilyRepository::class);
         $this->app->bind(DepartmentRepositoryInterface::class, DepartmentRepository::class);
+        $this->app->bind(LocationRepositoryInterface::class, LocationRepository::class);
         $this->app->bind(GeneralClassRepositoryInterface::class, GeneralClassRepository::class);
         $this->app->bind(LearningOutcomeRepositoryInterface::class, LearningOutcomeRepository::class);
     }

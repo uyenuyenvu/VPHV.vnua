@@ -1,8 +1,8 @@
 <template>
   <div class="role-wrapper">
     <div class="popup">
-    <CreateOrUpdateDepartment ref="popupRef" :getListDepartment="getListDepartment" :department="departmentCurrent"/>
-    <DeleteDepartment ref="popupDeleteRef" :getListDepartment="getListDepartment" :resetListIdDelete="resetListIdDelete"/>
+    <CreateOrUpdateLocation ref="popupRef" :getListLocation="getListLocation" :location="locationCurrent"/>
+    <DeleteLocation ref="popupDeleteRef" :getListLocation="getListLocation" :resetListIdDelete="resetListIdDelete"/>
     </div>
     <q-breadcrumbs>
       <q-breadcrumbs-el
@@ -10,7 +10,7 @@
         icon="home"
         :to="{ name: 'Home' }"
       />
-      <q-breadcrumbs-el label="phòng ban" />
+      <q-breadcrumbs-el label="địa điểm" />
     </q-breadcrumbs>
     <q-slide-transition>
       <q-card class="filter-wrapper" v-if="isFilter">
@@ -114,7 +114,7 @@
             <q-icon name="fa-solid fa-plus" class="q-mr-sm" size="xs"></q-icon>
             Tạo mới
           </q-btn>
-          <q-btn no-caps @click="getListDepartment" color="secondary" class="q-mr-sm">
+          <q-btn no-caps @click="getListLocation" color="secondary" class="q-mr-sm">
             <q-icon
               name="fa-solid fa-refresh"
               class="q-mr-sm"
@@ -133,21 +133,19 @@
                 <q-checkbox v-model="checkboxAll" />
               </th>
               <th class="text-center" width="5%">STT</th>
-              <th class="text-left">Mã phòng ban</th>
-              <th class="text-left">Tên phòng ban</th>
-              <th class="text-center">Ngày tạo</th>
-              <th class="text-center">Trưởng phòng ban</th>
-              <th class="text-left">Được tạo bởi</th>
+              <th class="text-left">Tên địa điểm</th>
+                <th class="text-left">Mô tả địa điểm</th>
+                <th class="text-center">Ngày tạo</th>
               <th class="text-center">Tác vụ</th>
             </tr>
           </thead>
           <tbody>
-            <template v-if="departments.length > 0">
-              <tr v-for="(department, index) in departments" :key="index">
+            <template v-if="locations.length > 0">
+              <tr v-for="(location, index) in locations" :key="index">
                 <td class="text-center">
                   <q-checkbox
                     v-model="checkboxArray"
-                    :val="getValueLodash(department, 'id', 0)"
+                    :val="getValueLodash(location, 'id', 0)"
                   />
                 </td>
                 <td class="text-center">
@@ -156,30 +154,22 @@
                 <td class="text-left">
                   <span
                     @click="
-                      redirectRouter('DepartmentUpdate', { id: department.id })
+                      redirectRouter('LocationUpdate', { id: location.id })
                     "
                     class="text-bold cursor-pointer text-link"
                   >
-                    {{ getValueLodash(department, "department_code", "") }}
+                    {{ getValueLodash(location, "name", "") }}
                   </span>
                 </td>
                 <td class="text-left">
-                  {{ getValueLodash(department, "name", "") }}
+                  {{ getValueLodash(location, "description", "") }}
                 </td>
                 <td class="text-center">
                   {{
                     handleFormatDate(
-                      getValueLodash(department, "created_at", "")
+                      getValueLodash(location, "created_at", "")
                     )
                   }}
-                </td>
-                <td class="text-center">
-                  {{
-                    department.leader ? department.leader.full_name : "-"
-                  }}
-                </td>
-                <td class="text-left">
-                  {{ getValueLodash(department, "create_by.full_name", "") }}
                 </td>
                 <td class="text-center">
                   <div class="inline cursor-pointer">
@@ -191,7 +181,7 @@
                           v-close-popup
                           @click="
                           openDialogUpdate(
-                            department || null
+                            location || null
                           )
                           "
                         >
@@ -211,7 +201,7 @@
                           v-close-popup
                           @click="
                             openDialogDelete(
-                              getValueLodash(department, 'id', 0)
+                              getValueLodash(location, 'id', 0)
                             )
                           "
                         >
@@ -239,7 +229,7 @@
             </template>
           </tbody>
           <q-inner-loading
-            :showing="loadingDepartments"
+            :showing="loadingLocations"
             label-class="text-teal"
             label-style="font-size: 1.1em"
           />

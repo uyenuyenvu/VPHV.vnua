@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AuthStudentController;
 use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\GeneralClassController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ReportController;
@@ -75,6 +76,16 @@ Route::group(['middleware' => ['jwt.auth', 'auth.admin']], function () {
         Route::delete('/delete-selected', [DepartmentController::class, 'deleteSelected'])->middleware('permission:department-delete');
         Route::delete('/{id}', [DepartmentController::class, 'destroy'])->middleware('permission:department-delete');
         Route::get('/get-all-id', [DepartmentController::class, 'getAllId'])->middleware('permission:department-index');
+    });
+
+    Route::prefix('locations')->group(function () {
+        Route::get('/', [LocationController::class, 'index'])->middleware('permission:location-index');
+        Route::get('/all', [LocationController::class, 'getAll'])->middleware('permission:location-index');
+        Route::post('/', [LocationController::class, 'store'])->middleware('permission:location-create');
+        Route::put('/{id}', [LocationController::class, 'update'])->middleware('permission:location-update');
+        Route::delete('/delete-selected', [LocationController::class, 'deleteSelected'])->middleware('permission:location-delete');
+        Route::delete('/{id}', [LocationController::class, 'destroy'])->middleware('permission:location-delete');
+        Route::get('/get-all-id', [LocationController::class, 'getAllId'])->middleware('permission:location-index');
     });
 
     Route::prefix('roles')->group(function () {

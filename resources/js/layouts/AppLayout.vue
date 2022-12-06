@@ -102,8 +102,7 @@
 
           <q-separator class="q-my-md"/>
 
-          <q-item v-ripple clickable
-                  @click="redirectRouteName('DepartmentSchedule')">
+          <q-item v-ripple clickable>
             <q-item-section avatar>
               <q-icon color="grey" name="fa-solid fa-building-user"/>
             </q-item-section>
@@ -111,7 +110,14 @@
               <q-item-label>Lịch phòng ban</q-item-label>
             </q-item-section>
           </q-item>
-
+            <div
+                v-for="department in departments" :key="department.id"
+                :class="$route.params?.id?.toString() === department.id.toString() ? 'item-department active' :'item-department'"
+            >
+                <router-link class="textLink" :to='{ name: "DepartmentSchedule", params:{id: department.id} }'
+                             style="text-decoration: none; color: black;text-transform: capitalize; margin-right: 5px;">
+                    <q-icon color="grey" name="fa-solid fa-chevron-right" style="margin-right: 10px; margin-left: 20px"/><span>{{department.name}}</span></router-link>
+            </div>
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -306,6 +312,23 @@ export default defineComponent({
     }
     &:hover{
         background-color: #ebf3ff;
+    }
+}
+.item-department{
+    padding: 10px 10px 10px 0;
+    border-bottom: 0.1px;
+    border-style: none none dashed;
+    margin-left: 30px;
+    border-color: #8f8f8f;
+    &:hover{
+        background-color: #ebf3ff;
+    }
+    &.active{
+        background-color: #ebf3ff;
+    }
+    a{
+        display: flex;
+        align-items: center;
     }
 }
 </style>

@@ -2,11 +2,11 @@
     <q-dialog v-model="isShow" @hide="closeDialog">
         <q-card style="width: 300px">
             <q-card-section>
-                <div class="text-h6">Thêm mới phòng ban</div>
+                <div class="text-h6">Thêm mới địa điểm</div>
             </q-card-section>
             <q-card-section class="row items-center" style="width: 100%">
                 <label for="name" class="text-bold"
-                >Tên phòng ban <span class="required">*</span></label
+                >Tên địa điểm <span class="required">*</span></label
                 >
                 <q-input
                     class="full-width"
@@ -15,24 +15,21 @@
                     v-model="name"
                     id="name"
                     ref="nameRef"
-                    :rules="autoGenerateRule(`tên phòng ban`)"
+                    :rules="autoGenerateRule(`tên địa điểm`)"
                     :error-message="getValidationErrors('name')"
                     :error="hasValidationErrors('name')"
-                    @update:model-value="updateNameDepartment"
                 />
-                <label for="code" class="text-bold"
-                >Mã phòng ban <span class="required">*</span></label
+                <label for="description" class="text-bold"
+                >Mô tả địa điểm </label
                 >
                 <q-input
                     class="full-width"
+                    type="textarea"
                     outlined
                     dense
-                    v-model="code"
-                    id="code"
-                    ref="codeRef"
-                    :rules="autoGenerateRule(`mã phòng ban`)"
-                    :error-message="getValidationErrors('code')"
-                    :error="hasValidationErrors('code')"
+                    v-model="description"
+                    id="description"
+                    ref="descriptionRef"
                 ></q-input>
 
             </q-card-section>
@@ -60,41 +57,30 @@ import api from "../../api";
 import {useQuasar} from "quasar";
 
 export default ({
-    name: "CreateOrUpdateDepartment",
+    name: "CreateOrUpdateLocation",
     props: {
-        getListDepartment: {
+        getListLocation: {
             type: Function,
         }
     },
-    setup({getListDepartment}) {
+    setup({getListLocation}) {
         const nameRef = ref(null);
         const name = ref("")
-        const codeRef = ref(null);
-        const code = ref("")
+        const descriptionRef = ref(null);
+        const description = ref("")
         const isShow = ref(false);
-        const departmentCurrent = ref();
+        const locationCurrent = ref();
 
         const $q = useQuasar();
 
-        const setDepartmentCurrent = (department) => {
-            departmentCurrent.value = department
-            name.value = departmentCurrent.value.name;
-            code.value = departmentCurrent.value.department_code;
+        const setLocationCurrent = (location) => {
+            locationCurrent.value = location
+            name.value = locationCurrent.value.name;
+            description.value = locationCurrent.value.description;
         }
 
         const closeDialog = () => {
-            resetFrom([code, name, isShow, departmentCurrent]);
-        };
-        const updateNameDepartment = () => {
-            name.value = capitalize(name.value.replaceAll('  ', ' '))
-            const splitArray = name.value.split(' ');
-            let txt = '';
-            splitArray.forEach((item)=>{
-                if (item.length>0){
-                    txt += item.charAt(0)
-                }
-            })
-            code.value = txt.toUpperCase();
+            resetFrom([description, name, isShow, locationCurrent]);
         };
 
         function capitalize(s)
@@ -110,27 +96,26 @@ export default ({
 
         const isValidate = () => {
             let isCheck = true
-            if (nameRef.value.hasError || codeRef.value.hasError) {
+            if (nameRef.value.hasError ) {
                 isCheck = false
             }
             return isCheck
         }
 
         const handleCreateOrUpdate = () => {
-            codeRef.value.validate()
             nameRef.value.validate()
 
             if (isValidate()) {
                 const payload = {
-                    department_code: code.value,
+                    description: description.value,
                     name: name.value,
                 }
-                if (departmentCurrent.value) {
-                    api.updateDepartment(payload, departmentCurrent.value.id)
+                if (locationCurrent.value) {
+                    api.updateLocation(payload, locationCurrent.value.id)
                         .then(() => {
-                            getListDepartment();
+                            getListLocation();
                             closeDialog();
-                            generateNotify("Sửa thành công phòng ban", true)
+                            generateNotify("Sửa thành công địa điểm", true)
                         })
                         .catch(() => {
                             generateNotify("Sửa mới thất bại")
@@ -139,14 +124,14 @@ export default ({
                             $q.loading.hide()
                         });
                 } else
-                    api.createDepartment(payload)
+                    api.createLocation(payload)
                         .then(() => {
-                            getListDepartment();
+                            getListLocation();
                             closeDialog();
-                            generateNotify("Thêm mới thành công phòng ban", true)
+                            generateNotify("Thêm mới thành công địa điểm", true)
                         })
                         .catch(() => {
-                            generateNotify("Thêm mới thất bại phòng ban")
+                            generateNotify("Thêm mới thất bại địa điểm")
                         })
                         .finally(() => {
                             $q.loading.hide()
@@ -201,7 +186,7 @@ export default ({
         }
 
         return {
-            name, nameRef, code, codeRef, handleCreateOrUpdate, setValidationErrors,
+            name, nameRef, description, descriptionRef, handleCreateOrUpdate, setValidationErrors,
             getValidationErrors,
             hasValidationErrors,
             resetValidateErrors,
@@ -209,9 +194,8 @@ export default ({
             onChangeDialog,
             isShow,
             closeDialog,
-            departmentCurrent,
-            setDepartmentCurrent,
-            updateNameDepartment,
+            locationCurrent,
+            setLocationCurrent,
             capitalize
         }
     },

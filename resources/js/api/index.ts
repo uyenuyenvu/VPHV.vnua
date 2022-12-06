@@ -197,6 +197,61 @@ export default {
         })
     },
 
+    //locations
+    getLocations<T>(params: object = {}): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'get',
+            url: '/locations',
+            params: params
+        })
+    },
+    createLocation<T>(data: any): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'post',
+            url: '/locations',
+            data: data
+        })
+    },
+    getAllLocation<T>(params: IParams): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'get',
+            url: `/locations/all`,
+            params: params
+        })
+    },
+    getLocation<T>(id: string): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'get',
+            url: `/locations/${id}`
+        })
+    },
+    updateLocation<T>(data: any, id: string): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'put',
+            url: `/locations/${id}`,
+            data: data
+        })
+    },
+    deleteLocation<T>(id: string): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'delete',
+            url: `/locations/${id}`,
+        })
+    },
+    deleteLocationSelected<T>(data: any): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'delete',
+            url: `/locations/delete-selected`,
+            data: data
+        })
+    },
+    getAllLocationId<T>(): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'get',
+            url: '/locations/get-all-id',
+        })
+    },
+
     //users
     getUsers<T>(params: object = {}): AxiosPromise<IResult<T>> {
         return apiAxios({

@@ -3,31 +3,31 @@ import { useQuasar } from "quasar";
 import { defineComponent, getCurrentInstance, onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import api from "../../api";
-import { IDepartmentResult } from "../../models/IDepartmentResult";
+import { ILocationResult } from "../../models/ILocationResult";
 import { IPage, IPayload } from "../../models/IPage";
 import IPaginate from "../../models/IPaginate";
 import { HomeMutationTypes } from "../../store/modules/home/mutation-types";
 import eventBus from "../../utils/eventBus";
 import { formatDate } from "../../utils/helpers";
-import CreateOrUpdateDepartment from "./CreateOrUpdate.vue";
-import DeleteDepartment from "./Delete.vue";
+import CreateOrUpdateLocation from "./CreateOrUpdate.vue";
+import DeleteLocation from "./Delete.vue";
 
 export default defineComponent({
-  name: "DepartmentIndex",
+  name: "LocationIndex",
   components: {
-    DeleteDepartment,
-    CreateOrUpdateDepartment
+    DeleteLocation,
+    CreateOrUpdateLocation
   },
   setup() {
     const {proxy} = getCurrentInstance()
     const $q = useQuasar();
     const store = useStore();
     const search = ref<string>("");
-    const departments = ref<Array<IDepartmentResult>>([]);
-    const departmentIds = ref<Array<string>>([]);
+    const locations = ref<Array<ILocationResult>>([]);
+    const locationIds = ref<Array<string>>([]);
     const checkboxArray = ref<Array<string>>([]);
     const checkboxAll = ref<boolean | string>(false);
-    const departmentCurrent = ref<any>({})
+    const locationCurrent = ref<any>({})
     const page = ref<IPage>({
       currentPage: 1,
       total: 0,
@@ -35,7 +35,7 @@ export default defineComponent({
     });
 
     const currentPage = ref<number>(1);
-    const loadingDepartments = ref<boolean>(false);
+    const loadingLocations = ref<boolean>(false);
     const isFilter = ref<boolean>(false);
     const toggleFilter = (): void => {
       isFilter.value = !isFilter.value;
@@ -52,8 +52,8 @@ export default defineComponent({
       return formatDate(value);
     };
 
-    const getListDepartment = (): void => {
-      loadingDepartments.value = true;
+    const getListLocation = (): void => {
+      loadingLocations.value = true;
       const payload: IPayload = {
         page: 1,
       };
@@ -64,38 +64,38 @@ export default defineComponent({
 
       payload.page = page?.value?.currentPage;
       api
-        .getDepartments<IPaginate<IDepartmentResult[]>>(payload)
+        .getLocations<IPaginate<ILocationResult[]>>(payload)
         .then((res) => {
-          departments.value = _.get(res, "data.data.department.data");
+            locations.value = _.get(res, "data.data.location.data");
 
-          departmentIds.value = departments.value.map(department => department.id);
+            locationIds.value = locations.value.map(location => location.id);
                 page.value.currentPage = _.get(
             res,
-            "data.data.department.current_page",
+            "data.data.location.current_page",
             1
           );
-          page.value.total = _.get(res, "data.data.department.last_page", 0);
-          page.value.perPage = _.get(res, "data.data.department.per_page", 0);
+          page.value.total = _.get(res, "data.data.location.last_page", 0);
+          page.value.perPage = _.get(res, "data.data.location.per_page", 0);
         })
         .catch(() => {
-            generateNotify("Không tải được danh sách phòng ban")
+            generateNotify("Không tải được danh sách địa điểm")
         })
-        .finally(() => (loadingDepartments.value = false));
+        .finally(() => (loadingLocations.value = false));
     };
 
     const openDialogDelete = async (id: number) => {
-        proxy.$refs.popupDeleteRef?.setDepartmentId(id)
+        proxy.$refs.popupDeleteRef?.setLocationId(id)
         proxy.$refs.popupDeleteRef?.onChangeDialog()
     };
 
-    const openDialogUpdate = async (department: any) => {
-        if(!department) return;
-        proxy.$refs.popupRef?.setDepartmentCurrent(department)
+    const openDialogUpdate = async (location: any) => {
+        if(!location) return;
+        proxy.$refs.popupRef?.setLocationCurrent(location)
         proxy.$refs.popupRef?.onChangeDialog()
     };
 
     const openDialogDeleteSelect = async (checkboxArray) => {
-        proxy.$refs.popupDeleteRef?.setListIdDepartment(checkboxArray)
+        proxy.$refs.popupDeleteRef?.setListIdLocation(checkboxArray)
         proxy.$refs.popupDeleteRef?.onChangeDialog()
 
     };
@@ -118,17 +118,17 @@ export default defineComponent({
 
     watch(
       () => page?.value?.currentPage,
-      () => getListDepartment()
+      () => getListLocation()
     );
     watch(
       () => search.value,
-      () => getListDepartment()
+      () => getListLocation()
     );
     watch(
       () => checkboxAll.value,
       (value) => {
         if (value === true) {
-          checkboxArray.value = departmentIds.value;
+          checkboxArray.value = locationIds.value;
         }
 
         if (value === false) {
@@ -140,7 +140,7 @@ export default defineComponent({
     watch(
       () => checkboxArray.value,
       (value) => {
-        if (value.length < departmentIds.value.length) {
+        if (value.length < locationIds.value.length) {
           checkboxAll.value = "maybe";
         }
 
@@ -151,11 +151,11 @@ export default defineComponent({
     );
 
     onMounted(() => {
-      store.commit(`home/${HomeMutationTypes.SET_TITLE}`, "Quản lý phòng ban");
+      store.commit(`home/${HomeMutationTypes.SET_TITLE}`, "Quản lý địa điểm");
       eventBus.$on("notify-success", (message: string) => {
         generateNotify(message, true)
       });
-        getListDepartment();
+        getListLocation();
 
     });
 
@@ -173,16 +173,16 @@ export default defineComponent({
         onClickCreateBtn,
         getValueLodash,
         currentPage,
-        departments,
-        loadingDepartments,
-        getListDepartment,
+        locations,
+        loadingLocations,
+        getListLocation,
         page,
         openDialogDelete,
         openDialogDeleteSelect,
         checkboxArray,
         checkboxAll,
         resetListIdDelete,
-        departmentCurrent,
+        locationCurrent,
     };
   },
 });

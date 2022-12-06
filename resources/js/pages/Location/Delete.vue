@@ -3,9 +3,9 @@
       <q-card>
         <q-card-section class="row items-center">
           <q-avatar icon="fa-solid fa-trash" color="red" text-color="white" />
-          {{listIdDepartment ? true : false}}
-        <span v-if="listIdDepartment?.length ? true : false" class="q-ml-sm"
-            >Bạn có chắc chắn muốn xóa {{ listIdDepartment?.length }} bản ghi! Dữ
+          {{listIdLocation ? true : false}}
+        <span v-if="listIdLocation?.length ? true : false" class="q-ml-sm"
+            >Bạn có chắc chắn muốn xóa {{ listIdLocation?.length }} bản ghi! Dữ
             liệu không thể phục hồi!
         </span>
         <span v-else class="q-ml-sm"
@@ -38,63 +38,63 @@ import api from "../../api";
 import { useQuasar } from "quasar";
 
 export default ({
-    name: "DeleteDepartment",
+    name: "DeleteLocation",
     props: {
-        getListDepartment: {
+        getListLocation: {
             type: Function,
         },
         resetListIdDelete: {
             type: Function
         }
     },
-    setup({getListDepartment, resetListIdDelete}) {
+    setup({getListLocation, resetListIdDelete}) {
         const isShow = ref(false);
-        const departmentId = ref();
-        const listIdDepartment = ref([])
+        const locationId = ref();
+        const listIdLocation = ref([])
 
         const $q = useQuasar();
 
-        const setDepartmentId = (id) => {
-            departmentId.value = id
+        const setLocationId = (id) => {
+            locationId.value = id
         }
 
-        const setListIdDepartment = (listId) => {
-            listIdDepartment.value = listId
+        const setListIdLocation = (listId) => {
+            listIdLocation.value = listId
         }
 
         const closeDialog = () => {
-            resetFrom([departmentId, listIdDepartment]);
+            resetFrom([locationId, listIdLocation]);
         };
 
         const handleDelete = () => {
-            if(listIdDepartment.value?.length) {
+            if(listIdLocation.value?.length) {
                 $q.loading.show();
                 const data = {
-                    id: listIdDepartment.value,
+                    id: listIdLocation.value,
                 };
                 api
-                .deleteDepartmentSelected(data)
+                .deleteLocationSelected(data)
                 .then(() => {
-                    getListDepartment();
+                    getListLocation();
                     closeDialog();
                     resetListIdDelete();
-                    generateNotify("Xóa thành công phòng ban", true)
+                    generateNotify("Xóa thành công địa điểm", true)
                 })
                 .catch(() => {
-                    generateNotify("Không xóa được phòng ban")
+                    generateNotify("Không xóa được địa điểm")
                 })
                 .finally(() => $q.loading.hide());
             } else {
                 $q.loading.show();
                 api
-                    .deleteDepartment(departmentId.value)
+                    .deleteLocation(locationId.value)
                     .then(() => {
-                        getListDepartment();
+                        getListLocation();
                         closeDialog();
-                        generateNotify("Xóa thành công phòng ban", true)
+                        generateNotify("Xóa thành công địa điểm", true)
                     })
                     .catch(() => {
-                        generateNotify("Không xóa được phòng ban")
+                        generateNotify("Không xóa được địa điểm")
                     })
                     .finally(() => $q.loading.hide());
             }
@@ -140,9 +140,9 @@ export default ({
             onChangeDialog,
             isShow,
             closeDialog,
-            setDepartmentId,
-            setListIdDepartment,
-            listIdDepartment
+            setLocationId,
+            setListIdLocation,
+            listIdLocation
         }
     },
 })
