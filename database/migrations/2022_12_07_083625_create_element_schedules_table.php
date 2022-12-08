@@ -13,9 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('schedules', function (Blueprint $table) {
+        Schema::create('element_schedules', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->bigInteger('user_id')->nullable()->comment('id user');
+            $table->bigInteger('schedule_id')->nullable()->comment('id schedule');
+            $table->text('name')->nullable()->comment('Tên thành phần');
         });
     }
 
@@ -26,6 +28,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('schedules');
+        Schema::table('element_schedules', function (Blueprint $table) {
+            //
+        });
     }
 };

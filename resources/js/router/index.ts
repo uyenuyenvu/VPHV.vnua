@@ -6,13 +6,19 @@ const routeSchedule: Array<RouteRecordRaw> = [
     {
         path: '/',
         name: 'AcademySchedule',
-        component: () => import('../pages/Academy.vue')
+        component: () => import('../pages/Schedule/Academy.vue')
     },
     {
         path: '/item-department/:id',
         name: 'DepartmentSchedule',
-        component: () => import('../pages/Department.vue')
+        component: () => import('../pages/Schedule/Department.vue')
     },
+    {
+        path: '/create',
+        name: 'ScheduleCreate',
+        component: () => import('../pages/Schedule/ScheduleCreate.vue'),
+        meta: {isAuthenticated: true},
+    }
     ]
 const routeAdmin: Array<RouteRecordRaw> = [
     {
