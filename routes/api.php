@@ -109,7 +109,6 @@ Route::group(['middleware' => ['jwt.auth', 'auth.admin']], function () {
         Route::get('/group', [PermissionController::class, 'getGroupPermission'])
             ->middleware('permission:role-index');
     });
-
 });
 
 Route::group(['prefix' => 'student'], function () {
@@ -132,5 +131,8 @@ Route::group(['prefix' => 'student'], function () {
         });
     });
 });
-Route::get('/', [DepartmentController::class, 'index']);
-Route::get('/all', [DepartmentController::class, 'getAll']);
+Route::get('/departments/', [DepartmentController::class, 'index']);
+Route::get('/departments/all', [DepartmentController::class, 'getAll']);
+
+Route::get('/schedules/', [DepartmentController::class, 'index']);
+
