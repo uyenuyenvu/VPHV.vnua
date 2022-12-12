@@ -107,12 +107,78 @@
             </div>
             <div class="form-group row q-gutter-md">
               <div class="col">
+                <label class="text-bold"
+                >Chế độ đăng</label
+                >
+                  <q-toggle v-model="is_public"/>
+                <label :class="is_public? 'txt-green' : 'txt-red'">{{is_public?'Công khai' : 'Riêng tư'}}</label>
+                <p v-if="is_public" style="font-style: italic; color: #6b7280">*Hiển thị lịch trình công khai</p>
+                <p v-else style="font-style: italic; color: #6b7280">*Chỉ hiển thị lịch này với tài khoản quản trị viên và tài khoản các thành viên tham gia</p>
+                <template v-if="auth.is_super_admin">
+                  <label class="text-bold"
+                  >Loại lịch trình:</label
+                  >
+                  <q-toggle v-model="type"/>
+                  <label class="txt-green">{{type?'Lịch học viện' : 'Lịch phòng ban'}}</label>
+                  <template v-if="!type">
+                    <br>
+                    <label class="text-bold"
+                    >Phòng ban<span class="required">*</span></label
+                    >
+                    <div>
+                      <q-select
+                          emit-value
+                          map-options
+                          :ref="refInput.department_id"
+                          borderless
+                          dense
+                          outlined
+                          v-model="department_id"
+                          option-value="id"
+                          option-label="name"
+                          :options="departments"
+                          :rules="rule.department_id"
+                      />
+                    </div>
+                  </template>
+                </template>
+                <template v-else>
+                  <label class="text-bold"
+                  >Loại lịch trình:</label
+                  >
+                  <q-toggle v-model="type"/>
+                  <label class="txt-green">{{type?'Lịch học viện' : 'Lịch phòng ban'}}</label>
+                  <template v-if="!type">
+                    <br>
+                    <label class="text-bold"
+                    >Phòng ban<span class="required">*</span></label
+                    >
+                    <div>
+                      <q-select
+                          emit-value
+                          map-options
+                          :ref="refInput.department_id"
+                          borderless
+                          dense
+                          outlined
+                          v-model="department_id"
+                          option-value="id"
+                          option-label="name"
+                          :options="departments.filter(item => item.id === auth.department_id)"
+                          :rules="rule.department_id"
+                      />
+                    </div>
+                  </template>
+                </template>
+              </div>
+              <div class="col">
                 <q-uploader
                     url="http://localhost:4444/upload"
                     label="Tài liệu đính kèm"
                     multiple
-                    style="width: 50%"
+                    style="width: 100%"
                     @added="addFile"
+                    @removed="removeFile"
                 />
               </div>
             </div>
@@ -204,9 +270,11 @@ export default defineComponent({
       leader_id: ref<string>(""),
       leader_other_name: ref(""),
       description: ref<string>(""),
-      type: ref<number>(),
+      type: ref<boolean>(true),
+      is_public: ref<boolean>(true),
       department_id: ref<number>(),
     };
+    const auth = store.getters["auth/getAuthUser"]
 
     const payload = reactive({...user})
     const roles = reactive(ref<IRoleResult[]>([]))
@@ -227,6 +295,7 @@ export default defineComponent({
       start_time: ref<any>(null),
       leader_other_name: ref<any>(null),
       element: ref<any>(null),
+      department_id: ref<any>(null),
     };
 
     const rule = {
@@ -245,6 +314,9 @@ export default defineComponent({
       leader_other_name: [
         (val: any) =>
             (val && val.length > 0) || "Trường người chủ trì không được bỏ trống!",
+      ],
+      department_id: [
+        (val: any) => val || "Trường phòng ban không được bỏ trống!",
       ],
     };
 
@@ -391,7 +463,7 @@ export default defineComponent({
     const isValidate = (): boolean => {
       let nameInput: string = "";
       let check = true;
-      const listInput: any = user.is_leader.value
+      const listInput: any = !user.type.value
           ? {...refInput}
           : {...refInput, department_id: null}
       if (idUser.value) delete listInput.password
@@ -561,9 +633,13 @@ export default defineComponent({
       router.push({name: nameRoute});
     };
 
-    const addFile = (file) : void =>{
-      console.log(file)
-      files.value.push(file)
+    const addFile = (file:any[]) : void =>{
+      file.forEach((item)=>{
+        files.value.push(item)
+      })
+    }
+    const removeFile = (file:any[]) : void =>{
+      files.value = files.value.filter(item => item !== file[0])
     }
 
     onMounted(() => {
@@ -610,7 +686,9 @@ export default defineComponent({
       elementNameOptions,
       lstElement,
       addFile,
-      files
+      removeFile,
+      files,
+      auth
     };
   },
 });
@@ -682,6 +760,12 @@ export default defineComponent({
     padding: 5px 10px!important;
     white-space: nowrap;
   }
+}
+.txt-green{
+  color: green;
+}
+.txt-red{
+  color: red;
 }
 </style>
 <style src="@vueform/multiselect/themes/default.css"></style>
