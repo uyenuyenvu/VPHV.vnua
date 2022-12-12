@@ -8,10 +8,13 @@ import {store} from './store'
 import router from './router'
 import '@quasar/extras/material-icons/material-icons.css'
 import '@quasar/extras/fontawesome-v6/fontawesome-v6.css'
-
+import CKEditor from '@ckeditor/ckeditor5-vue';
+import Multiselect from '@vueform/multiselect'
 const app = createApp(App)
 app.use(store)
 app.use(router)
+app.use( CKEditor )
+app.component('Multiselect', Multiselect)
 app.use(Quasar, {
     plugins: {
         Loading, Notify, Dialog, QDate

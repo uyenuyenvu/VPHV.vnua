@@ -1,212 +1,164 @@
 <template>
-    <div class="role-wrapper">
-        <q-breadcrumbs>
-            <q-breadcrumbs-el
-                label="Bảng điều khiển"
-                icon="home"
-                :to="{ name: 'Home' }"
-            />
-            <q-breadcrumbs-el label="Quản lý người dùng" :to="{ name: 'User' }"/>
-            <q-breadcrumbs-el :label="idUser ? 'Chỉnh sửa' :'Tạo mới'"/>
-        </q-breadcrumbs>
-
-        <div class="main">
-            <div class="row">
-                <div class="col-9 q-pr-lg">
-                    <q-card class="main-form col-6">
-                        <div class="form-group row gap-2 q-gutter-md">
-                            <div class="col">
-                                <label for="full_name" class="text-bold"
-                                >Họ và tên <span class="required">*</span></label
-                                >
-                                <q-input
-                                    outlined
-                                    dense
-                                    v-model="full_name"
-                                    id="full_name"
-                                    :ref="refInput.full_name"
-                                    :rules="rule.full_name"
-                                    :error-message="getValidationErrors('full_name')"
-                                    :error="hasValidationErrors('full_name')"
-                                />
-                            </div>
-                            <div class="col">
-                                <label for="name" class="text-bold"
-                                >Tên tài khoản <span class="required">*</span></label
-                                >
-                                <q-input
-                                    :disable="idUser ? true : false"
-                                    outlined
-                                    dense
-                                    v-model="user_name"
-                                    id="user_name"
-                                    :ref="refInput.user_name"
-                                    :rules="rule.user_name"
-                                    :error-message="getValidationErrors('user_name')"
-                                    :error="hasValidationErrors('user_name')"
-                                />
-                            </div>
-                        </div>
-                        <div class="form-group row q-gutter-md">
-                            <div class="col">
-                                <label for="email" class="text-bold"
-                                >Email <span class="required">*</span></label
-                                >
-                                <q-input
-                                    outlined
-                                    dense
-                                    v-model="email"
-                                    id="email"
-                                    :ref="refInput.email"
-                                    :rules="rule.email"
-                                    :error-message="getValidationErrors('email')"
-                                    :error="hasValidationErrors('email')"
-                                />
-                            </div>
-                            <div class="col">
-                                <label for="phone" class="text-bold"
-                                >Số điện thoại <span class="required">*</span></label
-                                >
-                                <q-input
-                                    outlined
-                                    dense
-                                    v-model="phone"
-                                    id="phone"
-                                    :ref="refInput.phone"
-                                    :rules="rule.phone"
-                                    :error-message="getValidationErrors('phone')"
-                                    :error="hasValidationErrors('phone')"
-                                />
-                            </div>
-                        </div>
-                        <div class="form-group row gap-2 q-gutter-md">
-                            <div :class="idUser ? 'hidden col' : ' col' ">
-                                <label for="password" class="text-bold"
-                                >Mật khẩu<span class="required">*</span></label
-                                >
-                                <q-input
-                                    outlined
-                                    dense
-                                    v-model="password"
-                                    id="password"
-                                    :ref="refInput.password"
-                                    :rules="rule.password"
-                                    :error-message="getValidationErrors('password')"
-                                    :error="hasValidationErrors('password')"
-                                    :type="isPwd ? 'password' : 'text'"
-                                >
-                                    <template v-slot:append>
-                                        <q-icon
-                                            :name="isPwd ? 'visibility_off' : 'visibility'"
-                                            class="cursor-pointer"
-                                            @click="isPwd = !isPwd"
-                                        />
-                                    </template>
-                                </q-input>
-                            </div>
-                            <div class="col" style="max-height: 63px">
-                                <label for="role_id" class="text-bold"
-                                >Nhóm quyền <span class="required">*</span></label
-                                >
-                                <div>
-                                    <q-select
-                                        emit-value
-                                        map-options
-                                        option-label="name"
-                                        option-value="id"
-                                        :ref="refInput.role_id"
-                                        borderless
-                                        dense
-                                        outlined
-                                        v-model="role_id"
-                                        :options="roles"
-                                        :rules="rule.role_id"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="name" class="text-bold">Chức danh </label>
-                            <div class="row border-group">
-                                <div class="col q-px-sm">
-                                    <div>
-                                        <label for="name" class="text-bold">Quản trị viên </label>
-                                        <q-toggle v-model="is_super_admin"/>
-                                    </div>
-                                </div>
-                                <div class="col q-px-sm">
-                                    <div>
-                                        <label for="name" class="text-bold">Trưởng phòng ban </label>
-                                        <q-toggle v-model="is_leader"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div v-if="is_leader" class="form-group row q-gutter-md q-mt-sm">
-                            <div class="col" style="max-height: 63px">
-                                <label for="name" class="text-bold"
-                                >Phòng ban<span class="required">*</span></label
-                                >
-                                <div>
-                                    <q-select
-                                        emit-value
-                                        map-options
-                                        :ref="refInput.department_id"
-                                        borderless
-                                        dense
-                                        outlined
-                                        v-model="department_id"
-                                        option-value="id"
-                                        option-label="name"
-                                        :options="departments"
-                                        :rules="rule.department_id"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </q-card>
-                </div>
-                <div class="col-3 right-sidebar">
-                    <q-card class="widget meta-boxes action-horizontal">
-                        <q-card>
-                            <q-card-section>
-                                <div class="widget-title text-bold">Tác vụ</div>
-                            </q-card-section>
-                            <q-separator/>
-                            <q-card-section>
-                                <q-btn
-                                    @click="handleSave"
-                                    no-caps
-                                    color="secondary"
-                                    class="q-mr-sm"
-                                >
-                                    <q-icon
-                                        name="fa-solid fa-save"
-                                        class="q-mr-sm"
-                                        size="xs"
-                                    ></q-icon>
-                                    Lưu
-                                </q-btn>
-                                <q-btn
-                                    @click="redirectRouter('User')"
-                                    no-caps
-                                    color="warning"
-                                    class="q-mr-sm"
-                                >
-                                    <q-icon
-                                        name="fa-solid fa-rotate-left"
-                                        class="q-mr-sm"
-                                        size="xs"
-                                    ></q-icon>
-                                    Quay lại
-                                </q-btn>
-                            </q-card-section>
-                        </q-card>
-                    </q-card>
-                </div>
+  <div class="role-wrapper">
+    <div class="main">
+      <div class="row">
+        <div class="col-9 q-pr-lg">
+          <q-card class="main-form col-12">
+            <div class="form-group row gap-2 q-gutter-md">
+              <div class="col">
+                <label for="title" class="text-bold"
+                >Tiêu đề <span class="required">*</span></label
+                >
+                <q-input
+                    outlined
+                    dense
+                    v-model="title"
+                    id="title"
+                    :ref="refInput.title"
+                    :rules="rule.title"
+                    :error-message="getValidationErrors('title')"
+                    :error="hasValidationErrors('title')"
+                />
+              </div>
             </div>
+            <div class="form-group row q-gutter-md">
+              <div class="col">
+                <label class="text-bold"
+                >Địa điểm <span class="required">*</span></label
+                >
+                <q-select
+                    emit-value
+                    map-options
+                    :ref="refInput.location_other_name"
+                    borderless
+                    dense
+                    use-input
+                    outlined
+                    v-model="location_other_name"
+                    @new-value="createValue"
+                    @filter="filterFn"
+                    :options="locationNameOptions"
+                    :rules="rule.location_other_name"
+                />
+              </div>
+              <div class="col">
+                <label class="text-bold"
+                >Thời gian bắt đầu <span class="required">*</span></label
+                >
+                <div class="input-time">
+                  <input type="datetime-local" name="start_time" v-model="start_time">
+                </div>
+
+              </div>
+              <div class="col">
+                <label class="text-bold"
+                >Thời gian kết thúc </label
+                >
+                <div class="input-time">
+                  <input type="datetime-local" v-model="end_time">
+                </div>
+              </div>
+            </div>
+            <div class="form-group row gap-2 q-gutter-md">
+              <div class="col">
+                <label class="text-bold"
+                >Mô tả chi tiết</label
+                >
+                <div>
+                  <ckeditor :editor="editor" v-model="description" :config="editorConfig"/>
+                </div>
+              </div>
+            </div>
+            <div class="form-group row q-gutter-md">
+              <div class="col">
+                <label class="text-bold"
+                >Chủ trì <span class="required">*</span></label
+                >
+                <q-select
+                    emit-value
+                    map-options
+                    :ref="refInput.leader_other_name"
+                    borderless
+                    dense
+                    use-input
+                    outlined
+                    v-model="leader_other_name"
+                    @new-value="createValueLeader"
+                    @filter="filterFnLeader"
+                    :options="leaderNameOptions"
+                    :rules="rule.leader_other_name"
+                />
+              </div>
+            </div>
+            <div class="form-group row q-gutter-md">
+              <div class="col">
+                <label class="text-bold"
+                >Thành phần tham dự</label
+                >
+                <Multiselect
+                    v-model="lstElement"
+                    mode="tags"
+                    :close-on-select="false"
+                    :searchable="true"
+                    :create-option="true"
+                    :options="elementNameOptions"
+                />
+              </div>
+            </div>
+            <div class="form-group row q-gutter-md">
+              <div class="col">
+                <q-uploader
+                    url="http://localhost:4444/upload"
+                    label="Tài liệu đính kèm"
+                    multiple
+                    style="width: 50%"
+                    @added="addFile"
+                />
+              </div>
+            </div>
+          </q-card>
         </div>
+        <div class="col-3 right-sidebar">
+          <q-card class="widget meta-boxes action-horizontal">
+            <q-card>
+              <q-card-section>
+                <div class="widget-title text-bold">Tác vụ</div>
+              </q-card-section>
+              <q-separator/>
+              <q-card-section>
+                <q-btn
+                    @click="handleSave"
+                    no-caps
+                    color="secondary"
+                    class="q-mr-sm"
+                >
+                  <q-icon
+                      name="fa-solid fa-save"
+                      class="q-mr-sm"
+                      size="xs"
+                  ></q-icon>
+                  Lưu
+                </q-btn>
+                <q-btn
+                    @click="redirectRouter('User')"
+                    no-caps
+                    color="warning"
+                    class="q-mr-sm"
+                >
+                  <q-icon
+                      name="fa-solid fa-rotate-left"
+                      class="q-mr-sm"
+                      size="xs"
+                  ></q-icon>
+                  Quay lại
+                </q-btn>
+              </q-card-section>
+            </q-card>
+          </q-card>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -222,296 +174,514 @@ import _ from "lodash";
 import IRoleResult from "../../models/IRoleResult";
 import IPaginate from "resources/js/models/IPaginate";
 import {IDepartmentResult} from "../../models/IDepartmentResult";
+import {ILocationResult} from "../../models/ILocationResult";
 import {VALIDATE_EMAIL_REGEX, VALIDATE_PHONE_REGEX_RULE,} from "../../utils/constants";
 import {useRoute} from 'vue-router'
 import IUserResult from "resources/js/models/IUserResult";
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-
+// register globally
 export default defineComponent({
-    name: "ScheduleCreate",
-    setup() {
-        const store = useStore();
-        const $q = useQuasar();
-        const router = useRouter();
-        const {
-            setValidationErrors,
-            getValidationErrors,
-            hasValidationErrors,
-            resetValidateErrors,
-        } = validationHelper();
-        const route = useRoute()
+  name: "ScheduleCreate",
+  setup() {
+    const store = useStore();
+    const $q = useQuasar();
+    const router = useRouter();
+    const {
+      setValidationErrors,
+      getValidationErrors,
+      hasValidationErrors,
+      resetValidateErrors,
+    } = validationHelper();
+    const route = useRoute()
 
-        const user: any = {
-            password: ref<string>(""),
-            user_name: ref<string>(""),
-            full_name: ref<string>(""),
-            phone: ref<string>(""),
-            email: ref<string>(""),
-            is_super_admin: ref(false),
-            is_leader: ref(false),
-            department_id: ref<number>(),
-            role_id: ref<number>(),
-        };
+    const user: any = {
+      title: ref<string>(""),
+      start_time: ref<string>(""),
+      end_time: ref<string>(""),
+      location_id: ref<string>(""),
+      location_other_name: ref<string>(""),
+      leader_id: ref<string>(""),
+      leader_other_name: ref(""),
+      description: ref<string>(""),
+      type: ref<number>(),
+      department_id: ref<number>(),
+    };
 
-        const payload = reactive({...user})
-        const roles = reactive(ref<IRoleResult[]>([]))
-        const departments = ref<IDepartmentResult[]>([]);
+    const payload = reactive({...user})
+    const roles = reactive(ref<IRoleResult[]>([]))
+    const departments = ref<IDepartmentResult[]>([]);
+    const locations = ref<ILocationResult[]>([]);
+    const locationIds = ref<string[]>([]);
+    const locationNameOptions = ref<string[]>([]);
+    const users = ref<IUserResult[]>([]);
+    const leaderIds = ref<string[]>([]);
+    const leaderNameOptions = ref<string[]>([]);
+    const files = ref<any[]>([])
 
-        const refInput: any = {
-            password: ref<any>(null),
-            user_name: ref<any>(null),
-            full_name: ref<any>(null),
-            phone: ref<any>(null),
-            email: ref<any>(null),
-            department_id: ref<any>(null),
-            role_id: ref<any>(null),
-        };
+    const elementNameOptions = ref<string[]>([])
+    const lstElement = ref( ['1'])
 
-        const rule = {
-            full_name: [
-                (val: any) =>
-                    (val && val.length > 0) || "Trường họ và tên không được bỏ trống!",
-            ],
-            phone: [
-                (val: any) =>
-                    (val && val.length > 0) ||
-                    "Trường số điện thoại không được bỏ trống!",
-                (val: any) => val.length < 11 || "Trường số điện thoại không hợp lệ!",
-                (val: string) =>
-                    VALIDATE_PHONE_REGEX_RULE.test(val) ||
-                    "Trường số điện thoại không hợp lệ!",
-            ],
-            user_name: [
-                (val: any) =>
-                    (val && val.length > 0) ||
-                    "Trường tên tài khoản không được bỏ trống!",
-            ],
-            email: [
-                (val: any) =>
-                    (val && val.length > 0) || "Trường email không được bỏ trống!",
-                (val: string) =>
-                    VALIDATE_EMAIL_REGEX.test(val) || "Trường email thoại không hợp lệ!",
-            ],
-            password: [
-                (val: any) =>
-                    (val && val.length > 0) || "Trường mật khẩu không được bỏ trống!",
-            ],
-            role_id: [(val: any) => val || "Trường nhóm quyền không được bỏ trống!"],
-            department_id: [
-                (val: any) => val || "Trường phòng ban không được bỏ trống!",
-            ],
-        };
+    const refInput: any = {
+      title: ref<any>(null),
+      start_time: ref<any>(null),
+      leader_other_name: ref<any>(null),
+      element: ref<any>(null),
+    };
 
-        const isPwd = ref(true);
+    const rule = {
+      title: [
+        (val: any) =>
+            (val && val.length > 0) || "Trường tiêu đề không được bỏ trống!",
+      ],
+      location_other_name: [
+        (val: any) =>
+            (val && val.length > 0) || "Trường địa chỉ không được bỏ trống!",
+      ],
+      start_time: [
+        (val: any) =>
+            (val && val.length > 0) || "Trường thời gian bắt đầu không được bỏ trống!",
+      ],
+      leader_other_name: [
+        (val: any) =>
+            (val && val.length > 0) || "Trường người chủ trì không được bỏ trống!",
+      ],
+    };
 
-        const ruleSelect = (val: any) => {
-            if (val === null) {
-                return "Trường phòng ban không được bỏ trống!";
+    const isPwd = ref(true);
+
+    const ruleSelect = (val: any) => {
+      if (val === null) {
+        return "Trường phòng ban không được bỏ trống!";
+      }
+    };
+
+    const description = ref<string>("");
+    const editor = ClassicEditor;
+    const idUser = ref("")
+    const ticked = ref<any>([]);
+    const loadingPermission = ref<boolean>(false);
+    const permissionArray = ref<any>([]);
+    const  editorConfig= {
+      fontColor: {
+        colors: [
+          {
+            color: 'hsl(0, 0%, 0%)',
+            label: 'Black'
+          },
+          {
+            color: 'hsl(0, 0%, 30%)',
+            label: 'Dim grey'
+          },
+          {
+            color: 'hsl(0, 0%, 60%)',
+            label: 'Grey'
+          },
+          {
+            color: 'hsl(0, 0%, 90%)',
+            label: 'Light grey'
+          },
+          {
+            color: 'hsl(0, 0%, 100%)',
+            label: 'White',
+            hasBorder: true
+          },
+
+          // ...
+        ]
+      },
+      fontBackgroundColor: {
+        colors: [
+          {
+            color: 'hsl(0, 75%, 60%)',
+            label: 'Red'
+          },
+          {
+            color: 'hsl(30, 75%, 60%)',
+            label: 'Orange'
+          },
+          {
+            color: 'hsl(60, 75%, 60%)',
+            label: 'Yellow'
+          },
+          {
+            color: 'hsl(90, 75%, 60%)',
+            label: 'Light green'
+          },
+          {
+            color: 'hsl(120, 75%, 60%)',
+            label: 'Green'
+          },
+
+          // ...
+          // ...
+        ]
+      },
+      // toolbar: [
+      //   'heading', 'bulletedList', 'numberedList', 'fontColor', 'fontBackgroundColor', 'undo', 'redo'
+      // ]
+      toolbar: {
+        items: [
+          'heading', '|',
+          'fontfamily', 'fontsize', '|',
+          'alignment', '|',
+          'fontColor', 'fontBackgroundColor', '|',
+          'bold', 'italic', 'strikethrough', 'underline', 'subscript', 'superscript', '|',
+          'link', '|',
+          'outdent', 'indent', '|',
+          'bulletedList', 'numberedList', 'todoList', '|',
+          'code', 'codeBlock', '|',
+          'insertTable', '|',
+          'uploadImage', 'blockQuote', '|',
+          'undo', 'redo'
+        ],
+      }
+    }
+
+    const handleSave = (): void => {
+      if (isValidate()) {
+        const data = JSON.parse(JSON.stringify(payload));
+        if (idUser.value) {
+          api.updateUser(data, idUser.value).then(res => {
+            if (res) {
+              eventBus.$emit('notify-success', 'Cập nhật người dùng thành công')
+              redirectRouter('User')
             }
-        };
-
-        const description = ref<string>("");
-        const idUser = ref("")
-        const ticked = ref<any>([]);
-        const loadingPermission = ref<boolean>(false);
-        const permissionArray = ref<any>([]);
-
-        const handleSave = (): void => {
-            if (isValidate()) {
-                const data = JSON.parse(JSON.stringify(payload));
-                if (idUser.value) {
-                    api.updateUser(data, idUser.value).then(res => {
-                        if (res) {
-                            eventBus.$emit('notify-success', 'Cập nhật người dùng thành công')
-                            redirectRouter('User')
-                        }
-                    }).catch(error => {
-                        let errors = _.get(error.response, 'data.error', {})
-                        if (Object.keys(errors).length === 0) {
-                            let message = _.get(error.response, 'data.message', '')
-                            $q.notify({
-                                icon: 'report_problem',
-                                message,
-                                color: 'negative',
-                                position: 'top-right'
-                            })
-                        }
-                        if (Object.keys(errors).length > 0) {
-                            setValidationErrors(errors)
-                        }
-                    }).finally(() => $q.loading.hide())
-                } else {
-                    api.createUser<IRoleResult>(data).then(res => {
-                        if (res) {
-                            eventBus.$emit('notify-success', 'Tạo mới người dùng thành công')
-                            redirectRouter('User')
-                        }
-                    }).catch(error => {
-                        let errors = _.get(error.response, 'data.error', {})
-                        console.log('errors', errors)
-                        if (Object.keys(errors).length === 0) {
-                            let message = _.get(error.response, 'data.message', '')
-                            $q.notify({
-                                icon: 'report_problem',
-                                message,
-                                color: 'negative',
-                                position: 'top-right'
-                            })
-                        }
-                        if (Object.keys(errors).length > 0) {
-                            setValidationErrors(errors)
-                        }
-                    }).finally(() => $q.loading.hide())
-                }
+          }).catch(error => {
+            let errors = _.get(error.response, 'data.error', {})
+            if (Object.keys(errors).length === 0) {
+              let message = _.get(error.response, 'data.message', '')
+              $q.notify({
+                icon: 'report_problem',
+                message,
+                color: 'negative',
+                position: 'top-right'
+              })
             }
-        };
-
-        const isValidate = (): boolean => {
-            let nameInput: string = "";
-            let check = true;
-            const listInput: any = user.is_leader.value
-                ? {...refInput}
-                : {...refInput, department_id: null}
-            if (idUser.value) delete listInput.password
-            for (nameInput in listInput) {
-                listInput[nameInput]?.value?.validate();
-                if (listInput[nameInput]?.value?.hasError) {
-                    check = false;
-                }
+            if (Object.keys(errors).length > 0) {
+              setValidationErrors(errors)
             }
-            return check;
-        };
-
-        const getRoleList = () => {
-            const payload = {
-                page: 1,
-                limit: 100,
-            };
-            api
-                .getRoles<IPaginate<IRoleResult[]>>(payload)
-                .then((res) => {
-                    roles.value = _.get(res, "data.data.roles.data");
-                })
-                .catch(() => {
-                    $q.notify({
-                        icon: "report_problem",
-                        message: "Không tải được danh sách nhóm vai trò!",
-                        color: "negative",
-                        position: "top-right",
-                    });
-                })
-                .finally(() => {
-                });
-        };
-
-        const getListDepartment = (): void => {
-            const payload = {
-                page: 1,
-                limit: 100,
-            };
-            api
-                .getDepartments<IPaginate<IDepartmentResult[]>>(payload)
-                .then((res) => {
-                    departments.value = _.get(res, "data.data.department.data");
-                })
-                .catch(() => {
-                    $q.notify({
-                        icon: "report_problem",
-                        message: "Không tải được danh sách nhóm vai trò!",
-                        color: "negative",
-                        position: "top-right",
-                    });
-                })
-                .finally(() => {
-                });
-        };
-
-        const handleGetUser = (id: string): void => {
-            $q.loading.show()
-            api.getUser<IUserResult>(id).then(res => {
-                const data = _.get(res, 'data.data.user', '')
-                for (const key in user) {
-                    if (['is_leader', 'is_super_admin'].includes(key))
-                        user[key].value = data[key] ? true : false
-                    else user[key].value = data[key]
-                }
-            }).catch(() => {
-                $q.notify({
-                    icon: 'report_problem',
-                    message: 'Không tải được dữ liệu user!',
-                    color: 'negative',
-                    position: 'top-right'
-                })
-            }).finally(() => $q.loading.hide())
+          }).finally(() => $q.loading.hide())
+        } else {
+          api.createUser<IRoleResult>(data).then(res => {
+            if (res) {
+              eventBus.$emit('notify-success', 'Tạo mới người dùng thành công')
+              redirectRouter('User')
+            }
+          }).catch(error => {
+            let errors = _.get(error.response, 'data.error', {})
+            console.log('errors', errors)
+            if (Object.keys(errors).length === 0) {
+              let message = _.get(error.response, 'data.message', '')
+              $q.notify({
+                icon: 'report_problem',
+                message,
+                color: 'negative',
+                position: 'top-right'
+              })
+            }
+            if (Object.keys(errors).length > 0) {
+              setValidationErrors(errors)
+            }
+          }).finally(() => $q.loading.hide())
         }
+      }
+    };
 
-        watch(user.user_name, (): void => {
-            resetValidateErrors('user_name')
-            refInput.user_name.value.resetValidation()
+    const isValidate = (): boolean => {
+      let nameInput: string = "";
+      let check = true;
+      const listInput: any = user.is_leader.value
+          ? {...refInput}
+          : {...refInput, department_id: null}
+      if (idUser.value) delete listInput.password
+      for (nameInput in listInput) {
+        listInput[nameInput]?.value?.validate();
+        if (listInput[nameInput]?.value?.hasError) {
+          check = false;
+        }
+      }
+      return check;
+    };
+
+    const getRoleList = () => {
+      const payload = {
+        page: 1,
+        limit: 100,
+      };
+      api
+          .getRoles<IPaginate<IRoleResult[]>>(payload)
+          .then((res) => {
+            roles.value = _.get(res, "data.data.roles.data");
+          })
+          .catch(() => {
+            $q.notify({
+              icon: "report_problem",
+              message: "Không tải được danh sách nhóm vai trò!",
+              color: "negative",
+              position: "top-right",
+            });
+          })
+          .finally(() => {
+          });
+    };
+
+    const getListDepartment = (): void => {
+      const payload = {
+        page: 1,
+        limit: 100,
+      };
+      api
+          .getDepartments<IPaginate<IDepartmentResult[]>>(payload)
+          .then((res) => {
+            departments.value = _.get(res, "data.data.department.data");
+          })
+          .catch(() => {
+            $q.notify({
+              icon: "report_problem",
+              message: "Không tải được danh sách nhóm vai trò!",
+              color: "negative",
+              position: "top-right",
+            });
+          })
+          .finally(() => {
+          });
+    };
+    const filterFn = (val, update): void => {
+      update(() => {
+        if (val === '') {
+          locationNameOptions.value = locationIds.value
+        } else {
+          const needle = val.toLowerCase()
+          locationNameOptions.value = locationIds.value.filter(
+              v => v.toLowerCase().indexOf(needle) > -1
+          )
+        }
+      })
+    }
+    const filterFnLeader = (val, update): void => {
+      update(() => {
+        if (val === '') {
+          leaderNameOptions.value = leaderIds.value
+        } else {
+          const needle = val.toLowerCase()
+          leaderNameOptions.value = leaderIds.value.filter(
+              v => v.toLowerCase().indexOf(needle) > -1
+          )
+        }
+      })
+    }
+
+    const createValue = (val, done): void => {
+      user.location_id.value = null
+      done(val, 'toggle')
+    }
+    const createValueLeader = (val, done): void => {
+      user.leader_id.value = null
+      done(val, 'toggle')
+    }
+
+    const getListLocation = (): void => {
+      const payload = {
+        page: 1,
+        limit: 100,
+      };
+      api
+          .getLocations<IPaginate<ILocationResult[]>>(payload)
+          .then((res) => {
+            locations.value = _.get(res, "data.data.location.data");
+            locationIds.value = locations.value.map((obj) => obj.name);
+            locationNameOptions.value = locations.value.map((obj) => obj.name);
+          })
+          .catch(() => {
+            $q.notify({
+              icon: "report_problem",
+              message: "Không tải được danh sách nhóm vai trò!",
+              color: "negative",
+              position: "top-right",
+            });
+          })
+          .finally(() => {
+          });
+    };
+    const getListUser = (): void => {
+      const payload = {
+        page: 1,
+        limit: 100,
+      };
+      api
+          .getUsers<IPaginate<IUserResult[]>>(payload)
+          .then((res) => {
+            users.value = _.get(res, "data.data.users.data");
+            leaderIds.value = users.value.map((obj) => obj.user_name);
+            leaderNameOptions.value = users.value.map((obj) => obj.user_name);
+            elementNameOptions.value = users.value.map((obj) => obj.user_name);
+          })
+          .catch(() => {
+            $q.notify({
+              icon: "report_problem",
+              message: "Không tải được danh sách nhóm vai trò!",
+              color: "negative",
+              position: "top-right",
+            });
+          })
+          .finally(() => {
+          });
+    };
+
+    const handleGetUser = (id: string): void => {
+      $q.loading.show()
+      api.getUser<IUserResult>(id).then(res => {
+        const data = _.get(res, 'data.data.user', '')
+        for (const key in user) {
+          if (['is_leader', 'is_super_admin'].includes(key))
+            user[key].value = data[key] ? true : false
+          else user[key].value = data[key]
+        }
+      }).catch(() => {
+        $q.notify({
+          icon: 'report_problem',
+          message: 'Không tải được dữ liệu user!',
+          color: 'negative',
+          position: 'top-right'
         })
+      }).finally(() => $q.loading.hide())
+    }
 
-        for (const key in payload) {
-            if (refInput[key]) {
-                watch(user[key], (): void => {
-                    resetValidateErrors(key)
-                    refInput[key].value?.resetValidation()
-                })
-            }
-        }
+    for (const key in payload) {
+      if (refInput[key]) {
+        watch(user[key], (): void => {
+          resetValidateErrors(key)
+          refInput[key].value?.resetValidation()
+        })
+      }
+    }
 
-        const redirectRouter = (nameRoute: string): void => {
-            router.push({name: nameRoute});
-        };
+    const redirectRouter = (nameRoute: string): void => {
+      router.push({name: nameRoute});
+    };
 
-        onMounted(() => {
-            store.commit(`home/${HomeMutationTypes.SET_TITLE}`, "Quản lý người dùng");
-            getRoleList();
-            getListDepartment();
-            idUser.value = <string>route.params.id
-            if (idUser.value) {
-                handleGetUser(idUser.value)
-            }
-        });
-        return {
-            handleSave,
-            description,
-            ticked,
-            permissionArray,
-            loadingPermission,
-            redirectRouter,
-            getValidationErrors,
-            hasValidationErrors,
-            ruleSelect,
-            isPwd,
-            ...user,
-            rule,
-            refInput,
-            roles,
-            departments,
-            idUser,
-        };
-    },
+    const addFile = (file) : void =>{
+      console.log(file)
+      files.value.push(file)
+    }
+
+    onMounted(() => {
+      store.commit(`home/${HomeMutationTypes.SET_TITLE}`, "Quản lý người dùng");
+      getRoleList();
+      getListDepartment();
+      getListLocation();
+      getListUser();
+      idUser.value = <string>route.params.id
+      if (idUser.value) {
+        handleGetUser(idUser.value)
+      }
+    });
+    return {
+      handleSave,
+      description,
+      ticked,
+      permissionArray,
+      loadingPermission,
+      redirectRouter,
+      getValidationErrors,
+      hasValidationErrors,
+      ruleSelect,
+      isPwd,
+      ...user,
+      rule,
+      refInput,
+      roles,
+      departments,
+      locations,
+      users,
+      locationIds,
+      leaderIds,
+      idUser,
+      createValue,
+      filterFn,
+      createValueLeader,
+      filterFnLeader,
+      locationNameOptions,
+      leaderNameOptions,
+      getListUser,
+      editor,
+      editorConfig,
+      elementNameOptions,
+      lstElement,
+      addFile,
+      files
+    };
+  },
 });
 </script>
 
 <style scoped lang="scss">
 .role-wrapper {
-    .main {
-        margin-top: 20px;
+  .main {
+    margin-top: 20px;
 
-        .main-form {
-            padding: 10px;
-            margin-bottom: 15px;
+    .main-form {
+      padding: 10px;
+      margin-bottom: 15px;
 
-            .form-group {
-                margin-bottom: 15px;
+      .form-group {
+        margin-bottom: 15px;
 
-                .border-group {
-                    border: 1px solid #c2c2c2;
-                    border-radius: 4px;
-                }
-            }
+        .border-group {
+          border: 1px solid #c2c2c2;
+          border-radius: 4px;
         }
+      }
     }
+  }
+}
+
+::v-deep {
+  .q-field__native {
+    span {
+      padding: 5px 10px;
+      background: #005bff1a;
+      border-radius: 10px;
+    }
+  }
+
+  .text-negative {
+
+    .q-field__native {
+      span {
+        padding: 0 !important;
+      }
+    }
+  }
+}
+
+.input-time {
+  input {
+    height: 40px;
+    outline: none;
+    border: 1px solid;
+    border-color: #c2c2c2;
+    border-radius: 3px;
+    width: 100%;
+    padding: 0 15px;
+  }
+}
+::v-deep{
+  .multiselect-tag{
+    align-items: center;
+    background: #e5eeff!important;
+    border-radius: 5px;
+    color: #1e1f68!important;
+    display: flex;
+    font-size: var(--ms-tag-font-size,.875rem);
+    font-weight: normal!important;
+    line-height: var(--ms-tag-line-height,1.25rem);
+    margin-bottom: var(--ms-tag-my,.25rem);
+    margin-right: var(--ms-tag-mx,.25rem);
+    padding: 5px 10px!important;
+    white-space: nowrap;
+  }
 }
 </style>
+<style src="@vueform/multiselect/themes/default.css"></style>

@@ -3,7 +3,7 @@
         <div class="department-header">
             <div class="item-header">Thông tin linh tinh</div>
             <div class="item-header">
-                <q-btn no-caps @click="redirectRouter('UserCreate')" color="secondary" class="q-mr-sm">
+                <q-btn no-caps @click="redirectRouter('ScheduleCreate')" color="secondary" class="q-mr-sm">
                     <q-icon name="fa-solid fa-plus" class="q-mr-sm" size="xs"></q-icon>
                     Thêm lịch
                 </q-btn>
