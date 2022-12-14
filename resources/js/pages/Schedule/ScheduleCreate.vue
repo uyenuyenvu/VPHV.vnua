@@ -29,16 +29,16 @@
                 <q-select
                     emit-value
                     map-options
-                    :ref="refInput.location_other_name"
+                    :ref="refInput.location_name"
                     borderless
                     dense
                     use-input
                     outlined
-                    v-model="location_other_name"
+                    v-model="location_name"
                     @new-value="createValue"
                     @filter="filterFn"
                     :options="locationNameOptions"
-                    :rules="rule.location_other_name"
+                    :rules="rule.location_name"
                 />
               </div>
               <div class="col">
@@ -77,16 +77,16 @@
                 <q-select
                     emit-value
                     map-options
-                    :ref="refInput.leader_other_name"
+                    :ref="refInput.leader_name"
                     borderless
                     dense
                     use-input
                     outlined
-                    v-model="leader_other_name"
+                    v-model="leader_name"
                     @new-value="createValueLeader"
                     @filter="filterFnLeader"
                     :options="leaderNameOptions"
-                    :rules="rule.leader_other_name"
+                    :rules="rule.leader_name"
                 />
               </div>
             </div>
@@ -238,6 +238,7 @@ import eventBus from "../../utils/eventBus";
 import {validationHelper} from "../../utils/validationHelper";
 import _ from "lodash";
 import IRoleResult from "../../models/IRoleResult";
+import IScheduleResult from "../../models/IScheduleResult";
 import IPaginate from "resources/js/models/IPaginate";
 import {IDepartmentResult} from "../../models/IDepartmentResult";
 import {ILocationResult} from "../../models/ILocationResult";
@@ -265,10 +266,8 @@ export default defineComponent({
       title: ref<string>(""),
       start_time: ref<string>(""),
       end_time: ref<string>(""),
-      location_id: ref<string>(""),
-      location_other_name: ref<string>(""),
-      leader_id: ref<string>(""),
-      leader_other_name: ref(""),
+      location_name: ref<string>(""),
+      leader_name: ref(""),
       description: ref<string>(""),
       type: ref<boolean>(true),
       is_public: ref<boolean>(true),
@@ -293,7 +292,7 @@ export default defineComponent({
     const refInput: any = {
       title: ref<any>(null),
       start_time: ref<any>(null),
-      leader_other_name: ref<any>(null),
+      leader_name: ref<any>(null),
       element: ref<any>(null),
       department_id: ref<any>(null),
     };
@@ -303,7 +302,7 @@ export default defineComponent({
         (val: any) =>
             (val && val.length > 0) || "Trường tiêu đề không được bỏ trống!",
       ],
-      location_other_name: [
+      location_name: [
         (val: any) =>
             (val && val.length > 0) || "Trường địa chỉ không được bỏ trống!",
       ],
@@ -311,7 +310,7 @@ export default defineComponent({
         (val: any) =>
             (val && val.length > 0) || "Trường thời gian bắt đầu không được bỏ trống!",
       ],
-      leader_other_name: [
+      leader_name: [
         (val: any) =>
             (val && val.length > 0) || "Trường người chủ trì không được bỏ trống!",
       ],
@@ -330,7 +329,7 @@ export default defineComponent({
 
     const description = ref<string>("");
     const editor = ClassicEditor;
-    const idUser = ref("")
+    const idSchedule = ref("")
     const ticked = ref<any>([]);
     const loadingPermission = ref<boolean>(false);
     const permissionArray = ref<any>([]);
@@ -413,8 +412,10 @@ export default defineComponent({
     const handleSave = (): void => {
       if (isValidate()) {
         const data = JSON.parse(JSON.stringify(payload));
-        if (idUser.value) {
-          api.updateUser(data, idUser.value).then(res => {
+        data.elements = lstElement.value;
+        data.type = payload.type?1:0
+        if (idSchedule.value) {
+          api.updateSchedule(data, idSchedule.value).then(res => {
             if (res) {
               eventBus.$emit('notify-success', 'Cập nhật người dùng thành công')
               redirectRouter('User')
@@ -435,10 +436,11 @@ export default defineComponent({
             }
           }).finally(() => $q.loading.hide())
         } else {
-          api.createUser<IRoleResult>(data).then(res => {
+          api.createSchedule<IScheduleResult>(data).then(res => {
             if (res) {
-              eventBus.$emit('notify-success', 'Tạo mới người dùng thành công')
-              redirectRouter('User')
+              console.log(res)
+              eventBus.$emit('notify-success', 'Tạo mới lịch thành công')
+              redirectRouter('DetailSchedule', {id: res.data?.data?.schedule?.id})
             }
           }).catch(error => {
             let errors = _.get(error.response, 'data.error', {})
@@ -466,7 +468,6 @@ export default defineComponent({
       const listInput: any = !user.type.value
           ? {...refInput}
           : {...refInput, department_id: null}
-      if (idUser.value) delete listInput.password
       for (nameInput in listInput) {
         listInput[nameInput]?.value?.validate();
         if (listInput[nameInput]?.value?.hasError) {
@@ -545,11 +546,9 @@ export default defineComponent({
     }
 
     const createValue = (val, done): void => {
-      user.location_id.value = null
       done(val, 'toggle')
     }
     const createValueLeader = (val, done): void => {
-      user.leader_id.value = null
       done(val, 'toggle')
     }
 
@@ -629,8 +628,8 @@ export default defineComponent({
       }
     }
 
-    const redirectRouter = (nameRoute: string): void => {
-      router.push({name: nameRoute});
+    const redirectRouter = (nameRoute: string, params: object = {}): void => {
+      router.push({name: nameRoute, params: params});
     };
 
     const addFile = (file:any[]) : void =>{
@@ -648,9 +647,9 @@ export default defineComponent({
       getListDepartment();
       getListLocation();
       getListUser();
-      idUser.value = <string>route.params.id
-      if (idUser.value) {
-        handleGetUser(idUser.value)
+      idSchedule.value = <string>route.params.id
+      if (idSchedule.value) {
+        handleGetUser(idSchedule.value)
       }
     });
     return {
@@ -673,7 +672,7 @@ export default defineComponent({
       users,
       locationIds,
       leaderIds,
-      idUser,
+      idSchedule,
       createValue,
       filterFn,
       createValueLeader,

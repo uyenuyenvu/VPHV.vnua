@@ -14,6 +14,11 @@ const routeSchedule: Array<RouteRecordRaw> = [
         component: () => import('../pages/Schedule/Department.vue')
     },
     {
+        path: '/item-schedule/:id',
+        name: 'DetailSchedule',
+        component: () => import('../pages/Schedule/Detail.vue')
+    },
+    {
         path: '/create',
         name: 'ScheduleCreate',
         component: () => import('../pages/Schedule/ScheduleCreate.vue'),

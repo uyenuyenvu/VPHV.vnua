@@ -292,6 +292,33 @@ export default {
         })
     },
 
+    createSchedule<T>(data: any): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'post',
+            url: '/schedules',
+            data: data
+        })
+    },
+    getSchedule<T>(id: string): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'get',
+            url: `/schedules/${id}`
+        })
+    },
+    updateSchedule<T>(data: any, id: string): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'put',
+            url: `/schedules/${id}`,
+            data: data
+        })
+    },
+    deleteSchedule<T>(id: string): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'delete',
+            url: `/schedules/${id}`,
+        })
+    },
+
 	getClasses<T>(params: object = {}): AxiosPromise<IResult<T>> {
         return apiAxios({
             method: 'get',

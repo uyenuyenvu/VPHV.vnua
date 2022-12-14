@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\StudentController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\ScheduleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +48,12 @@ Route::group(['middleware' => ['jwt.auth', 'auth.admin']], function () {
         Route::get('/{id}', [UserController::class, 'show'])->middleware('permission:user-index');
         Route::put('/{id}', [UserController::class, 'update'])->middleware('permission:user-update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->middleware('permission:user-delete');
+    });
+    Route::prefix('schedules')->group(function () {
+        Route::post('/', [ScheduleController::class, 'store'])->middleware('permission:schedule-create');
+        Route::get('/{id}', [ScheduleController::class, 'show'])->middleware('permission:schedule-index');
+        Route::put('/{id}', [ScheduleController::class, 'update'])->middleware('permission:schedule-update');
+        Route::delete('/{id}', [ScheduleController::class, 'destroy'])->middleware('permission:schedule-delete');
     });
 
     Route::prefix('students')->group(function () {
@@ -134,5 +141,5 @@ Route::group(['prefix' => 'student'], function () {
 Route::get('/departments/', [DepartmentController::class, 'index']);
 Route::get('/departments/all', [DepartmentController::class, 'getAll']);
 
-Route::get('/schedules/', [DepartmentController::class, 'index']);
+Route::get('/schedules/', [ScheduleController::class, 'index']);
 

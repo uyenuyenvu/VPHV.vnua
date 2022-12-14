@@ -26,7 +26,18 @@ class Schedule extends Model
         'create_by',
         'update_by',
         'close_by',
-        'status'
+        'status',
+        'is_public',
+        'old_start_time',
+        'old_end_time',
+        'old_location_id',
+        'old_location_other_name',
+        'old_leader_id',
+        'old_leader_orther_name',
+        'old_title',
+        'old_description',
+        'old_type',
+        'old_department_id',
     ];
 
     public function leader(): BelongsTo

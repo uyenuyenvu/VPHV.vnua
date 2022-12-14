@@ -117,15 +117,15 @@ return [
         'description' => 'Có quyền xem lịch công tác của phòng ban mình'
     ],
     [
-        'code' => 'schedule-index-all',
-        'name' => 'xem lịch của tất cả phòng ban',
+        'code' => 'schedule-create',
+        'name' => 'tạo lịch',
         'group_code' => 'schedule',
-        'description' => 'Có quyền xem lịch công tác của tất cả các phòng ban'
+        'description' => 'Có quyền tạo lịch'
     ],
     [
-        'code' => 'schedule-index-all',
-        'name' => 'xem lịch của tất cả phòng ban',
+        'code' => 'schedule-update',
+        'name' => 'Sửa lịch mình đã tạo',
         'group_code' => 'schedule',
-        'description' => 'Có quyền xem lịch công tác của tất cả các phòng ban'
+        'description' => 'Có quyền Sửa lịch mình đã tạo'
     ],
 ];
