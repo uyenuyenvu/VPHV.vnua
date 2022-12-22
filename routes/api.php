@@ -40,6 +40,11 @@ Route::group(['prefix' => 'auth'], function () {
     });
 });
 
+Route::get('/departments/', [DepartmentController::class, 'index']);
+Route::get('/departments/all', [DepartmentController::class, 'getAll']);
+
+Route::get('/schedules/', [ScheduleController::class, 'index']);
+Route::get('/schedules/week', [ScheduleController::class, 'scheduleByWeek']);
 Route::group(['middleware' => ['jwt.auth', 'auth.admin']], function () {
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->middleware('permission:user-index');
@@ -138,8 +143,4 @@ Route::group(['prefix' => 'student'], function () {
         });
     });
 });
-Route::get('/departments/', [DepartmentController::class, 'index']);
-Route::get('/departments/all', [DepartmentController::class, 'getAll']);
-
-Route::get('/schedules/', [ScheduleController::class, 'index']);
 

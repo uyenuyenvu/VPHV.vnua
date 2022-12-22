@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Department\DeleteDepartmentRequest;
 use App\Http\Requests\Department\StoreDepartmentRequest;
 use App\Http\Requests\Department\UpdateDepartmentRequest;
+use App\Models\Element;
 use App\Models\Location;
 use App\Models\Schedule;
 use App\Models\User;
 use App\Repositories\Department\DepartmentRepositoryInterface;
 use App\Traits\ResponseTrait;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -43,6 +45,35 @@ class ScheduleController extends Controller
         $schedules = Schedule::all();
         return $this->responseSuccess(['schedules' => $schedules]);
     }
+    public function scheduleByWeek(Request $request): JsonResponse
+    {
+//        $data = $request->all();
+//        $relationships = ['createBy', 'updateBy','leader'];
+//        $columns = ['*'];
+//        $paginate = $data['limit'] ?? config('constants.limit_of_paginate', 10);
+//        $condition = [];
+//
+//        if (isset($data['q'])) {
+//            $condition[] = ['name', 'like', '%' . $data['q'] . '%'];
+//            $orCondition = [
+//                ['department_code', 'like', '%' . $data['q'] . '%'],
+//            ];
+//            $condition[] = ['name', 'or', $orCondition];
+//        }
+//
+//        if (isset($data['department_code'])) {
+//            $condition[] = ['department_code' => $data['department_code']];
+//        }
+//
+//        $department = $this->departmentRepository->getListPaginateBy($condition, $relationships, $columns, $paginate);
+        $schedules = Schedule::whereBetween('start_time',[Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+            ->orderBy('start_time')
+            ->get()
+            ->groupBy(function($data) {
+                return Carbon::parse($data->start_time)->format('Y-m-d');
+            });
+        return $this->responseSuccess(['schedules' => $schedules]);
+    }
 
     public function store(Request $request): JsonResponse
     {
@@ -51,12 +82,14 @@ class ScheduleController extends Controller
             $leader = User::where('user_name', $data['leader_name'])->first();
             if ($leader){
                 $data['leader_id']=$leader->id;
+                $data['leader_orther_name']=$leader->user_name;
             }else{
                 $data['leader_orther_name']=$data['leader_name'];
             }
             $location = Location::where('name', $data['location_name'])->first();
             if ($location){
                 $data['location_id']=$location->id;
+                $data['location_other_name']=$location->name;
             }else{
                 $data['location_other_name']=$data['location_name'];
             }
@@ -64,6 +97,25 @@ class ScheduleController extends Controller
                 'created_by' => auth()->id(),
                 'updated_by' => auth()->id(),
             ]));
+            if ($schedule){
+                $elements = $request->input('elements');
+                foreach ($elements as $element){
+                    $user = User::where('user_name', $element)->first();
+                    if ($user){
+                        $newElement = Element::create([
+                            'user_id'=>$user->id,
+                            'schedule_id'=> $schedule->id,
+                            'name'=>$element
+                        ]);
+                    }else{
+                        $newElement = Element::create([
+                            'schedule_id'=> $schedule->id,
+                            'name'=>$element
+                        ]);
+                    }
+
+            }
+            }
             return $this->responseSuccess(['schedule' => $schedule]);
 
         } catch (\Exception $exception) {
