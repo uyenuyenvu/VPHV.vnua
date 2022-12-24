@@ -9,38 +9,42 @@
                 <img src="/images/FITA.png" alt="">
               </div>
               <div class="textLoginHeader"><h4 class="textHeader text-center">Hệ thống điều hành trực tuyến</h4></div>
-              <form class="q-gutter-md frmLogin">
-                <q-input
-                    ref="userNameRef"
-                    v-model="userName"
-                    @keydown.enter.prevent="handleLogin"
-                    label="Tên đăng nhập/Email"
-                    outlined
-                    lazy-rules
-                    :rules="userNameRules"
-                />
-
-                <q-input
-                    ref="passwordRef"
-                    v-model="password"
-                    @keydown.enter.prevent="handleLogin"
-                    label="Mật khẩu"
-                    outlined
-                    type="password"
-                    lazy-rules
-                    :rules="passwordRules"
-                />
-
-                <div>
-                  <q-btn label="Đăng nhập" @click="handleLogin" icon-right="fa-solid fa-right-to-bracket" type="button"
-                         color="primary"></q-btn>
-                </div>
-              </form>
-            </div>
-            <div class="col">
               <div class="text-center">
                 <img class="loginImage" src="/images/login.png" alt="Login">
               </div>
+              <form class="q-gutter-md frmLogin">
+<!--                <q-input-->
+<!--                    ref="userNameRef"-->
+<!--                    v-model="userName"-->
+<!--                    @keydown.enter.prevent="handleLogin"-->
+<!--                    label="Tên đăng nhập/Email"-->
+<!--                    outlined-->
+<!--                    lazy-rules-->
+<!--                    :rules="userNameRules"-->
+<!--                />-->
+
+<!--                <q-input-->
+<!--                    ref="passwordRef"-->
+<!--                    v-model="password"-->
+<!--                    @keydown.enter.prevent="handleLogin"-->
+<!--                    label="Mật khẩu"-->
+<!--                    outlined-->
+<!--                    type="password"-->
+<!--                    lazy-rules-->
+<!--                    :rules="passwordRules"-->
+<!--                />-->
+
+<!--                <div>-->
+<!--                  <q-btn label="Đăng nhập" @click="handleLogin" icon-right="fa-solid fa-right-to-bracket" type="button"-->
+<!--                         color="primary"></q-btn>-->
+<!--                </div>-->
+<!--                <div class="separator">hoặc</div>-->
+                <div class="social-card">
+                  <div class="microsoft social-btn q-btn text-white" @click="getUrlSocial('azure')">
+                    <span><q-icon class="social-icon" name="fa-brands fa-windows" size="md"/><span class="social-text">Đăng nhập với tài khoản Microsoft</span></span>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         </q-card-section>

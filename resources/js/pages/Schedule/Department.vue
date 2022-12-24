@@ -1,56 +1,99 @@
 <template>
-    <div class="department-wrap">
-        <div class="department-header">
-            <div class="item-header">Thông tin linh tinh</div>
-            <div class="item-header">
-                <q-btn no-caps @click="redirectRouter('ScheduleCreate')" color="secondary" class="q-mr-sm">
-                    <q-icon name="fa-solid fa-plus" class="q-mr-sm" size="xs"></q-icon>
-                    Thêm lịch
-                </q-btn>
-            </div>
-        </div>
-      <div class="scheduleWrap">
-        <div class="weekContainer">
-          <table cellspacing="0" cellpadding="0">
-            <tr>
-              <th>Ngày/Tháng</th>
-              <th>Nội dung</th>
-              <th>Chủ trì</th>
-            </tr>
-            <tbody>
-            <template  class="itemDay" v-for="(day, index) in days">
-              <tr  v-for="(schedule, index2) in schedules[formatFullDate(day)]">
-              <td :rowspan="schedules[formatFullDate(day)].length" v-if="index2 === 0"  class="borderSolid dateInf">
-                {{daysName[index]}}
+  <div class="department-wrap">
+    <div class="department-header">
+      <div class="item-header">Thông tin linh tinh</div>
+      <div class="item-header">
+        <q-btn no-caps @click="redirectRouter('ScheduleCreate')" color="secondary" class="q-mr-sm">
+          <q-icon name="fa-solid fa-plus" class="q-mr-sm" size="xs"></q-icon>
+          Thêm lịch
+        </q-btn>
+      </div>
+    </div>
+    <div class="scheduleWrap">
+      <div class="weekContainer">
+        <table cellspacing="0" cellpadding="0">
+          <tr>
+            <th>Ngày/Tháng</th>
+            <th>Nội dung</th>
+            <th>Chủ trì</th>
+          </tr>
+          <tbody>
+          <template class="itemDay" v-for="(day, index) in days">
+            <tr v-for="(schedule, index2) in schedules[formatFullDate(day)]">
+              <td :rowspan="schedules[formatFullDate(day)].length" v-if="index2 === 0" class="borderSolid dateInf">
+                {{ daysName[index] }}
                 <br>
                 {{
                   formatDate(day)
                 }}
               </td>
               <td :class="index2===schedules[formatFullDate(day)].length-1 ? 'borderSolid contentInf':'borderDotted contentInf'">
-                {{schedule.title}}
-                </td>
-              <td  :class="index2===schedules[formatFullDate(day)].length-1 ? 'borderSolid leaderInf':'borderDotted leaderInf'">
-                {{schedule.leader_orther_name}}
-                </td>
-              </tr>
-              <tr v-if="!schedules[formatFullDate(day)]">
-                <td class="borderSolid dateInf">
-                  {{daysName[index]}}
-                  <br>
-                  {{
-                    formatDate(day)
-                  }}
-                </td>
-                <td class="borderSolid"></td>
-                <td class="borderSolid"></td>
-              </tr>
-            </template>
-            </tbody>
-          </table>
-        </div>
+                <div class="iconMenu">
+                  <q-btn  color="white" text-color="black" icon="menu">
+                    <q-menu
+                        transition-show="rotate"
+                        transition-hide="rotate"
+                    >
+                      <q-list style="min-width: 100px">
+                        <q-item clickable>
+                          <q-item-section>Chỉnh sửa</q-item-section>
+                        </q-item>
+                        <q-item clickable>
+                          <q-item-section>Phê duyệt</q-item-section>
+                        </q-item>
+                        <q-separator />
+                        <q-item clickable>
+                          <q-item-section>Xóa lịch</q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-menu>
+                  </q-btn>
+                </div>
+                <p>
+                  <q-icon color="grey" name="fa-solid fa-clock" style="margin-right: 10px"/>
+                  <b>
+                    <i>
+                      {{ formatTime(schedule.start_time) }}
+                      -
+                      {{ formatTime(schedule.end_time) }}
+                    </i>
+                    :
+                    {{ schedule.title }}
+                  </b>
+                </p>
+                <p>
+                  <q-icon color="grey" name="fa-solid fa-location-dot" style="margin-right: 10px"/>
+                  {{ schedule.location_other_name }}
+                </p>
+                <p v-if="schedule.elements?.length > 0">
+                  <q-icon color="grey" name="fa-solid fa-users"/>
+                  <span v-for="(element, index) in schedule.elements" style="margin-left: 10px"
+                        :class="element.user_id === auth.id?'ofMe' : 'member'">
+                    {{ element.name }} <span v-if="index < schedule.elements.length - 1">,</span></span>
+                </p>
+
+              </td>
+              <td :class="index2===schedules[formatFullDate(day)].length-1 ? 'borderSolid leaderInf':'borderDotted leaderInf'">
+                <span :class="schedule.leader_id === auth.id?'ofMe' : 'member'">{{ schedule.leader_orther_name }}</span>
+              </td>
+            </tr>
+            <tr v-if="!schedules[formatFullDate(day)]">
+              <td class="borderSolid dateInf">
+                {{ daysName[index] }}
+                <br>
+                {{
+                  formatDate(day)
+                }}
+              </td>
+              <td class="borderSolid"></td>
+              <td class="borderSolid"></td>
+            </tr>
+          </template>
+          </tbody>
+        </table>
       </div>
     </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -69,97 +112,104 @@ import eventBus from "../../utils/eventBus";
 import moment from 'moment'
 
 export default defineComponent({
-    name: "Department",
-    setup() {
+  name: "Department",
+  setup() {
 
-      const $q = useQuasar()
-      const store = useStore()
-        const router = useRouter()
-      const loadingRoles = ref<boolean>(false)
-      const schedules = ref<IScheduleResult[]>([])
-      const days = ref([]);
-      const daysName = ref([
-          'Thứ hai',
-          'Thứ ba',
-          'Thứ tư',
-          'Thứ năm',
-          'Thứ sáu',
-          'Thứ bảy',
-          'Chủ nhật',
-      ])
+    const $q = useQuasar()
+    const store = useStore()
+    const router = useRouter()
+    const loadingRoles = ref<boolean>(false)
+    const schedules = ref<IScheduleResult[]>([])
+    const days = ref([]);
+    const auth = store.getters["auth/getAuthUser"]
+    const daysName = ref([
+      'Thứ hai',
+      'Thứ ba',
+      'Thứ tư',
+      'Thứ năm',
+      'Thứ sáu',
+      'Thứ bảy',
+      'Chủ nhật',
+    ])
 
-        const redirectRouter = (nameRoute: string): void => {
-            router.push({name: nameRoute})
-        }
-      const formatDate = (date) : string =>{
-        return moment(date).format("DD / MM");
-      }
-      const formatFullDate = (date) : string =>{
-        return moment(date).format("YYYY-MM-DD");
-      }
-      const getListScheduleByWeek = (): void => {
-
-        loadingRoles.value = true
-        const payload: IPayload = {
-          page: 1,
-        }
-
-        // if (search.value) {
-        //   payload.q = search.value
-        // }
-        //
-        // payload.page = page.value.currentPage
-
-        api.getScheduleAcademy<IPaginate<IUserResult[]>>(payload).then(res => {
-          schedules.value = _.get(res, 'data.data.schedules')
-          console.log(schedules.value)
-        }).catch(() => {
-          $q.notify({
-            icon: 'report_problem',
-            message: 'Không tải được danh sách lịch!',
-            color: 'negative',
-            position: 'top-right'
-          })
-        }).finally(() => loadingRoles.value = false)
-      }
-      const selectWeek = (): void => {
-        const date = new Date();
-        days.value =  Array(7).fill(new Date(date)).map((el, idx) =>
-            new Date(el.setDate(el.getDate() - el.getDay() + idx)))
-      }
-
-      onMounted((): void => {
-        eventBus.$on('notify-success', (message: string) => {
-          $q.notify({
-            icon: 'check',
-            message: message,
-            color: 'positive',
-            position: 'top-right'
-          })
-        })
-        selectWeek()
-        getListScheduleByWeek()
-      })
-        return {
-          redirectRouter,
-          loadingRoles,
-          days,
-          daysName,
-          formatDate,
-          schedules,
-          formatFullDate
-        }
+    const redirectRouter = (nameRoute: string): void => {
+      router.push({name: nameRoute})
     }
+    const formatDate = (date): string => {
+      return moment(date).format("DD / MM");
+    }
+    const formatTime = (date): string => {
+      return moment(date).format("hh:mm");
+    }
+    const formatFullDate = (date): string => {
+      return moment(date).format("YYYY-MM-DD");
+    }
+    const getListScheduleByWeek = (): void => {
+
+      loadingRoles.value = true
+      const payload: IPayload = {
+        page: 1,
+      }
+
+      // if (search.value) {
+      //   payload.q = search.value
+      // }
+      //
+      // payload.page = page.value.currentPage
+
+      api.getScheduleAcademy<IPaginate<IUserResult[]>>(payload).then(res => {
+        schedules.value = _.get(res, 'data.data.schedules')
+        console.log(schedules.value)
+      }).catch(() => {
+        $q.notify({
+          icon: 'report_problem',
+          message: 'Không tải được danh sách lịch!',
+          color: 'negative',
+          position: 'top-right'
+        })
+      }).finally(() => loadingRoles.value = false)
+    }
+    const selectWeek = (): void => {
+      const date = new Date();
+      days.value = Array(7).fill(new Date(date)).map((el, idx) =>
+          new Date(el.setDate(el.getDate() - el.getDay() + idx)))
+    }
+
+    onMounted((): void => {
+      eventBus.$on('notify-success', (message: string) => {
+        $q.notify({
+          icon: 'check',
+          message: message,
+          color: 'positive',
+          position: 'top-right'
+        })
+      })
+      selectWeek()
+      getListScheduleByWeek()
+    })
+    return {
+      redirectRouter,
+      loadingRoles,
+      days,
+      daysName,
+      formatDate,
+      schedules,
+      formatFullDate,
+      formatTime,
+      auth
+    }
+  }
 })
 </script>
 
 <style scoped lang="scss">
 .department-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.weekContainer{
+
+.weekContainer {
   margin: 20px 10px 0 0;
   border: 1px solid;
   border-color: #4684d594;
@@ -167,6 +217,7 @@ export default defineComponent({
   border-radius: 10px;
   height: calc(100vh - 175px);
   overflow: auto;
+
   &::-webkit-scrollbar {
     width: 9px;
   }
@@ -185,44 +236,66 @@ export default defineComponent({
   &::-webkit-scrollbar-thumb:hover {
     background-color: #a8bbbf;
   }
-  table{
+
+  table {
     width: 100%;
     border-spacing: 0;
-    tr{
-      th{
+
+    tr {
+      th {
         padding: 10px 5px;
         border-right: 0.5px solid;
         color: white;
         background-color: #609cdc;
       }
-      td{
+
+      td {
         padding: 10px 5px;
         border-right: 0.5px solid;
         border-color: #609cdc;
-        &:last-of-type{
-          border-right: none!important;
+
+        &:last-of-type {
+          border-right: none !important;
         }
       }
     }
-    .borderSolid{
+
+    .borderSolid {
       border-bottom: 0.5px solid;
       border-color: #609cdc;
     }
-    .borderDotted{
+
+    .borderDotted {
       border-bottom: 0.5px dotted;
       border-color: #609cdc;
     }
-    .dateInf{
+
+    .dateInf {
       width: 120px;
       font-weight: bold;
       text-align: center;
     }
-    .leaderInf{
+
+    .leaderInf {
       width: 300px;
       text-align: center;
       font-weight: bold;
     }
   }
 
+}
+.ofMe{
+  font-weight: bold;
+  padding: 5px 10px;
+  background: pink;
+  border-radius: 5px;
+}
+.contentInf{
+  position: relative;
+  .iconMenu{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
 }
 </style>

@@ -67,6 +67,7 @@ class ScheduleController extends Controller
 //
 //        $department = $this->departmentRepository->getListPaginateBy($condition, $relationships, $columns, $paginate);
         $schedules = Schedule::whereBetween('start_time',[Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+            ->with(['elements'])
             ->orderBy('start_time')
             ->get()
             ->groupBy(function($data) {

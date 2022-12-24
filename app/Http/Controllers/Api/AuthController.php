@@ -118,24 +118,15 @@ class AuthController extends Controller
             return $this->responseError('Invalid provider email', [], 422);
         }
 
-        $social = $this->socialRepository->getFirstBy([
-            'social_id' => $userProvider->id,
-            'social_provider' => $provider,
-            'socialable_type' => User::class
-        ]);
 
-
-        if (!$social) {
-            return $this->responseError('Bạn chưa liên kết với tài khoản nào !');
-        }
-
-        $user = $this->userRepository->findById($social->socialable_id);
+        $user = User::where('email', $userProvider->email)->first();
 
         if (!$user) {
             return $this->responseError('Không tìm thấy tài khoản!');
         }
 
-        if (!$token = auth()->attempt(['email' => $userProvider->email])) {
+        auth('api')->login($user);
+        if (!$token = auth()->refresh()) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 

@@ -247,6 +247,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../pages/LoginGoogle.vue')
     },
     {
+        path: '/authorize/azure/callback',
+        name: 'LoginMicrosoft',
+        component: () => import('../pages/LoginMicrosoft.vue')
+    },
+    {
         path: '/:catchAll(.*)*',
         name: 'Error404',
         component: () => import('../pages/Errors/Error404.vue'),
