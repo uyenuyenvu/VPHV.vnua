@@ -31,7 +31,7 @@ export default defineComponent({
     const store = useStore()
     const router = useRouter()
     onMounted(() => {
-      // loginMicrosoftCallback()
+      loginMicrosoftCallback()
     })
     const loginMicrosoftCallback = (): void => {
       const payload = {
