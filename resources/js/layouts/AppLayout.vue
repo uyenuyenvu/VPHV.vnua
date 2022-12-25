@@ -96,7 +96,11 @@
               <q-icon color="grey" name="fa-solid fa-home"/>
             </q-item-section>
             <q-item-section>
-              <q-item-label>Lịch học viện</q-item-label>
+              <q-item-label>
+                <router-link :to='{ name: "AcademySchedule"}'
+                             style="text-decoration: none; color: black;">
+                  <span>Lịch học viện</span></router-link>
+              </q-item-label>
             </q-item-section>
           </q-item>
 

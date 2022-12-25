@@ -47,27 +47,13 @@ class ScheduleController extends Controller
     }
     public function scheduleByWeek(Request $request): JsonResponse
     {
-//        $data = $request->all();
-//        $relationships = ['createBy', 'updateBy','leader'];
-//        $columns = ['*'];
-//        $paginate = $data['limit'] ?? config('constants.limit_of_paginate', 10);
-//        $condition = [];
-//
-//        if (isset($data['q'])) {
-//            $condition[] = ['name', 'like', '%' . $data['q'] . '%'];
-//            $orCondition = [
-//                ['department_code', 'like', '%' . $data['q'] . '%'],
-//            ];
-//            $condition[] = ['name', 'or', $orCondition];
-//        }
-//
-//        if (isset($data['department_code'])) {
-//            $condition[] = ['department_code' => $data['department_code']];
-//        }
-//
-//        $department = $this->departmentRepository->getListPaginateBy($condition, $relationships, $columns, $paginate);
-        $schedules = Schedule::whereBetween('start_time',[Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-            ->with(['elements'])
+        $data = $request->all();
+        $query = Schedule::whereBetween('start_time',[$data['start_time'], $data['end_time']])
+            ->with(['elements']);
+        if (isset($data['department_id'])){
+            $query->where('department_id', $request->input('department_id'));
+        }
+        $schedules = $query
             ->orderBy('start_time')
             ->get()
             ->groupBy(function($data) {

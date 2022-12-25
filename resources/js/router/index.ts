@@ -6,7 +6,8 @@ const routeSchedule: Array<RouteRecordRaw> = [
     {
         path: '/',
         name: 'AcademySchedule',
-        component: () => import('../pages/Schedule/Academy.vue')
+        component: () => import('../pages/Schedule/Department.vue')
+        // component: () => import('../pages/Schedule/Academy.vue')
     },
     {
         path: '/item-department/:id',

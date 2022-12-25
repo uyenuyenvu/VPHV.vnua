@@ -305,10 +305,12 @@ export default {
             url: `/schedules/${id}`
         })
     },
-    getScheduleAcademy<T>(id: string): AxiosPromise<IResult<T>> {
+    getScheduleAcademy<T>(params: object = {}): AxiosPromise<IResult<T>> {
         return apiAxios({
             method: 'get',
-            url: `/schedules/week`
+            url: `/schedules/week`,
+            params: params
+
         })
     },
     updateSchedule<T>(data: any, id: string): AxiosPromise<IResult<T>> {

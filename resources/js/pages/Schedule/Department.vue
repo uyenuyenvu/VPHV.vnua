@@ -1,7 +1,17 @@
 <template>
   <div class="department-wrap">
     <div class="department-header">
-      <div class="item-header">Thông tin linh tinh</div>
+      <div class="item-header">
+        <input type="date" name="start_time" v-model="searchDate"
+               style="padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #609cdc;
+    outline: none;
+width: 200px;
+    text-align: center;
+    font-weight: bold;"
+        >
+      </div>
       <div class="item-header">
         <q-btn no-caps @click="redirectRouter('ScheduleCreate')" color="secondary" class="q-mr-sm">
           <q-icon name="fa-solid fa-plus" class="q-mr-sm" size="xs"></q-icon>
@@ -28,27 +38,27 @@
                 }}
               </td>
               <td :class="index2===schedules[formatFullDate(day)].length-1 ? 'borderSolid contentInf':'borderDotted contentInf'">
-                <div class="iconMenu">
-                  <q-btn  color="white" text-color="black" icon="menu">
-                    <q-menu
-                        transition-show="rotate"
-                        transition-hide="rotate"
-                    >
-                      <q-list style="min-width: 100px">
-                        <q-item clickable>
-                          <q-item-section>Chỉnh sửa</q-item-section>
-                        </q-item>
-                        <q-item clickable>
-                          <q-item-section>Phê duyệt</q-item-section>
-                        </q-item>
-                        <q-separator />
-                        <q-item clickable>
-                          <q-item-section>Xóa lịch</q-item-section>
-                        </q-item>
-                      </q-list>
-                    </q-menu>
-                  </q-btn>
-                </div>
+                <!--                <div class="iconMenu">-->
+                <!--                  <q-btn  color="white" text-color="black" icon="menu">-->
+                <!--                    <q-menu-->
+                <!--                        transition-show="rotate"-->
+                <!--                        transition-hide="rotate"-->
+                <!--                    >-->
+                <!--                      <q-list style="min-width: 100px">-->
+                <!--                        <q-item clickable>-->
+                <!--                          <q-item-section>Chỉnh sửa</q-item-section>-->
+                <!--                        </q-item>-->
+                <!--                        <q-item clickable>-->
+                <!--                          <q-item-section>Phê duyệt</q-item-section>-->
+                <!--                        </q-item>-->
+                <!--                        <q-separator />-->
+                <!--                        <q-item clickable>-->
+                <!--                          <q-item-section>Xóa lịch</q-item-section>-->
+                <!--                        </q-item>-->
+                <!--                      </q-list>-->
+                <!--                    </q-menu>-->
+                <!--                  </q-btn>-->
+                <!--                </div>-->
                 <p>
                   <q-icon color="grey" name="fa-solid fa-clock" style="margin-right: 10px"/>
                   <b>
@@ -97,7 +107,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, ref} from "vue";
+import {defineComponent, onMounted, ref, watch} from "vue";
 import {useRouter} from "vue-router/dist/vue-router";
 import {IPayload} from "../../models/IPage";
 import api from "../../api";
@@ -110,14 +120,21 @@ import {useStore} from "vuex";
 import {HomeMutationTypes} from "../../store/modules/home/mutation-types";
 import eventBus from "../../utils/eventBus";
 import moment from 'moment'
+import {useRoute} from "vue-router/dist/vue-router"
+import {date} from "quasar/dist/types/utils/date";
 
 export default defineComponent({
   name: "Department",
   setup() {
 
     const $q = useQuasar()
+    moment.updateLocale('en', {
+      week: {
+        dow: 1, // Monday is the first day of the week.
+      }
+    });
     const store = useStore()
-    const router = useRouter()
+    const router = useRoute()
     const loadingRoles = ref<boolean>(false)
     const schedules = ref<IScheduleResult[]>([])
     const days = ref([]);
@@ -131,6 +148,7 @@ export default defineComponent({
       'Thứ bảy',
       'Chủ nhật',
     ])
+    const searchDate = ref(moment().format('YYYY-MM-DD'))
 
     const redirectRouter = (nameRoute: string): void => {
       router.push({name: nameRoute})
@@ -147,19 +165,21 @@ export default defineComponent({
     const getListScheduleByWeek = (): void => {
 
       loadingRoles.value = true
-      const payload: IPayload = {
-        page: 1,
-      }
+      const payload: any = {}
 
-      // if (search.value) {
-      //   payload.q = search.value
-      // }
-      //
-      // payload.page = page.value.currentPage
+      if (searchDate.value){
+        payload.start_time = moment(searchDate.value, 'YYYY-MM-DD').startOf('week').isoWeekday(1).format("YYYY-MM-DD")
+        payload.end_time = moment(searchDate.value, 'YYYY-MM-DD').startOf('week').isoWeekday(1).add(6, 'days').format("YYYY-MM-DD")
+      }else{
+        payload.start_time = moment().startOf('week').isoWeekday(1).format("YYYY-MM-DD")
+        payload.end_time = moment().startOf('week').isoWeekday(1).add(6, 'days').format("YYYY-MM-DD")
+      }
+      if (router.params?.id){
+        payload.department_id = router.params?.id
+      }
 
       api.getScheduleAcademy<IPaginate<IUserResult[]>>(payload).then(res => {
         schedules.value = _.get(res, 'data.data.schedules')
-        console.log(schedules.value)
       }).catch(() => {
         $q.notify({
           icon: 'report_problem',
@@ -170,9 +190,12 @@ export default defineComponent({
       }).finally(() => loadingRoles.value = false)
     }
     const selectWeek = (): void => {
-      const date = new Date();
-      days.value = Array(7).fill(new Date(date)).map((el, idx) =>
-          new Date(el.setDate(el.getDate() - el.getDay() + idx)))
+      days.value = []
+      let dateTemp = moment().startOf('week').isoWeekday(1)
+      for (let i = 0; i < 7; i++) {
+        days.value.push(dateTemp)
+        dateTemp = moment(dateTemp).add(1, 'days');
+      }
     }
 
     onMounted((): void => {
@@ -187,16 +210,30 @@ export default defineComponent({
       selectWeek()
       getListScheduleByWeek()
     })
+    watch(router, () => {
+      getListScheduleByWeek()
+    })
+    watch(searchDate, (value) => {
+      days.value = []
+      const today = new Date(value);
+      for (let i = 1; i <= 7; i++) {
+        let day =  new Date(today.setDate(today.getDate() - today.getDay() + i))
+        days.value.push(moment(day))
+      }
+        getListScheduleByWeek()
+    })
     return {
       redirectRouter,
       loadingRoles,
       days,
+      router,
       daysName,
       formatDate,
       schedules,
       formatFullDate,
       formatTime,
-      auth
+      auth,
+      searchDate
     }
   }
 })
@@ -284,15 +321,18 @@ export default defineComponent({
   }
 
 }
-.ofMe{
+
+.ofMe {
   font-weight: bold;
   padding: 5px 10px;
   background: pink;
   border-radius: 5px;
 }
-.contentInf{
+
+.contentInf {
   position: relative;
-  .iconMenu{
+
+  .iconMenu {
     position: absolute;
     top: 10px;
     right: 10px;
