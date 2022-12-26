@@ -30,7 +30,7 @@ const routeAdmin: Array<RouteRecordRaw> = [
     {
         path: '',
         name: 'Home',
-        component: () => import('../pages/Home.vue'),
+        component: () => import('../pages/Schedule/Department.vue'),
         meta: {isAuthenticated: true},
     },
     {

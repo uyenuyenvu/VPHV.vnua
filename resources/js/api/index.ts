@@ -313,6 +313,18 @@ export default {
 
         })
     },
+    acceptSchedule<T>(id: string): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'put',
+            url: `/schedules/accept/${id}`,
+        })
+    },
+    cancelSchedule<T>(id: string): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'put',
+            url: `/schedules/cancel/${id}`,
+        })
+    },
     updateSchedule<T>(data: any, id: string): AxiosPromise<IResult<T>> {
         return apiAxios({
             method: 'put',

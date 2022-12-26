@@ -125,7 +125,7 @@ class AuthController extends Controller
             return $this->responseError('Không tìm thấy tài khoản!');
         }
 
-        auth('api')->login($user);
+        auth('api')->login($user, true);
         if (!$token = auth()->refresh()) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }

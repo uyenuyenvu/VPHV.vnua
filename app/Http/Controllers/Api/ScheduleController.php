@@ -114,6 +114,48 @@ class ScheduleController extends Controller
         }
     }
 
+    public function acceptSchedule($id){
+        try {
+            $schedule = Schedule::find($id);
+            if ($schedule){
+                $schedule->status = 1;
+                $schedule->save();
+                return $this->responseSuccess();
+            }else{
+                return $this->responseError();
+
+            }
+
+        } catch (\Exception $exception) {
+            Log::error('Error accept', [
+                'method' => __METHOD__,
+                'message' => $exception->getMessage()
+            ]);
+            return $this->responseError();
+        }
+    }
+    public function cancelSchedule($id){
+        try {
+            $schedule = Schedule::find($id);
+
+            if ($schedule){
+                $schedule->close_by = auth()->id();
+                $schedule->save();
+                return $this->responseSuccess();
+            }else{
+                return $this->responseError();
+
+            }
+
+        } catch (\Exception $exception) {
+            Log::error('Error accept', [
+                'method' => __METHOD__,
+                'message' => $exception->getMessage()
+            ]);
+            return $this->responseError();
+        }
+    }
+
     public function update(UpdateDepartmentRequest $request, $id): JsonResponse
     {
         try {

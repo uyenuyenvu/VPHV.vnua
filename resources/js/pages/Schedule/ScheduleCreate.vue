@@ -440,7 +440,7 @@ export default defineComponent({
             if (res) {
               console.log(res)
               eventBus.$emit('notify-success', 'Tạo mới lịch thành công')
-              redirectRouter('DetailSchedule', {id: res.data?.data?.schedule?.id})
+              redirectRouter('AcademySchedule', {id: res.data?.data?.schedule?.id})
             }
           }).catch(error => {
             let errors = _.get(error.response, 'data.error', {})

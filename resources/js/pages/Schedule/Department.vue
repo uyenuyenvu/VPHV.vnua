@@ -29,7 +29,9 @@ width: 200px;
           </tr>
           <tbody>
           <template class="itemDay" v-for="(day, index) in days">
-            <tr v-for="(schedule, index2) in schedules[formatFullDate(day)]">
+            <tr v-for="(schedule, index2) in schedules[formatFullDate(day)]"
+            :class="formatDate(day) === formatDate(new Date()) ? 'today' : ''"
+            >
               <td :rowspan="schedules[formatFullDate(day)].length" v-if="index2 === 0" class="borderSolid dateInf">
                 {{ daysName[index] }}
                 <br>
@@ -37,51 +39,82 @@ width: 200px;
                   formatDate(day)
                 }}
               </td>
-              <td :class="index2===schedules[formatFullDate(day)].length-1 ? 'borderSolid contentInf':'borderDotted contentInf'">
-                <!--                <div class="iconMenu">-->
-                <!--                  <q-btn  color="white" text-color="black" icon="menu">-->
-                <!--                    <q-menu-->
-                <!--                        transition-show="rotate"-->
-                <!--                        transition-hide="rotate"-->
-                <!--                    >-->
-                <!--                      <q-list style="min-width: 100px">-->
-                <!--                        <q-item clickable>-->
-                <!--                          <q-item-section>Chỉnh sửa</q-item-section>-->
-                <!--                        </q-item>-->
-                <!--                        <q-item clickable>-->
-                <!--                          <q-item-section>Phê duyệt</q-item-section>-->
-                <!--                        </q-item>-->
-                <!--                        <q-separator />-->
-                <!--                        <q-item clickable>-->
-                <!--                          <q-item-section>Xóa lịch</q-item-section>-->
-                <!--                        </q-item>-->
-                <!--                      </q-list>-->
-                <!--                    </q-menu>-->
-                <!--                  </q-btn>-->
-                <!--                </div>-->
-                <p>
-                  <q-icon color="grey" name="fa-solid fa-clock" style="margin-right: 10px"/>
-                  <b>
-                    <i>
-                      {{ formatTime(schedule.start_time) }}
-                      -
-                      {{ formatTime(schedule.end_time) }}
-                    </i>
-                    :
-                    {{ schedule.title }}
-                  </b>
-                </p>
-                <p>
-                  <q-icon color="grey" name="fa-solid fa-location-dot" style="margin-right: 10px"/>
-                  {{ schedule.location_other_name }}
-                </p>
-                <p v-if="schedule.elements?.length > 0">
-                  <q-icon color="grey" name="fa-solid fa-users"/>
-                  <span v-for="(element, index) in schedule.elements" style="margin-left: 10px"
-                        :class="element.user_id === auth.id?'ofMe' : 'member'">
+              <td :class="{
+                'borderSolid':index2===schedules[formatFullDate(day)].length-1,
+                'borderDotted': index2!==schedules[formatFullDate(day)].length-1,
+                'accepted': schedule.status.toString() === '1',
+                'closed': schedule.close_by !== null
+              }"
+              class="contentInf">
+                <div class="iconMenu">
+                  <q-btn  color="white" text-color="black" icon="menu">
+                    <q-menu
+                        transition-show="rotate"
+                        transition-hide="rotate"
+                    >
+                      <q-list style="min-width: 100px">
+                        <q-item clickable>
+                          <q-item-section>Chỉnh sửa</q-item-section>
+                        </q-item>
+                        <q-item clickable @click="confirmAccept(schedule.id)" >
+                          <q-item-section>Phê duyệt</q-item-section>
+                        </q-item>
+                        <q-separator />
+                        <q-item clickable  @click="confirmCancel(schedule.id)" v-if="schedule.status.toString() !== '1'">
+                          <q-item-section>Hủy lịch</q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-menu>
+                  </q-btn>
+                </div>
+                  <strike v-if="schedule.close_by !== null">
+                    <p>
+                      <q-icon color="grey" name="fa-solid fa-clock" style="margin-right: 10px"/>
+                      <b>
+                        <i>
+                          {{ formatTime(schedule.start_time) }}
+                          -
+                          {{ formatTime(schedule.end_time) }}
+                        </i>
+                        :
+                        {{ schedule.title }}
+                      </b>
+                    </p>
+                    <p>
+                      <q-icon color="grey" name="fa-solid fa-location-dot" style="margin-right: 10px"/>
+                      {{ schedule.location_other_name }}
+                    </p>
+                    <p v-if="schedule.elements?.length > 0">
+                      <q-icon color="grey" name="fa-solid fa-users"/>
+                      <span v-for="(element, index) in schedule.elements" style="margin-left: 10px"
+                            :class="element.user_id === auth.id?'ofMe' : 'member'">
                     {{ element.name }} <span v-if="index < schedule.elements.length - 1">,</span></span>
-                </p>
-
+                    </p>
+                  </strike>
+                <template v-else>
+                  <p>
+                    <q-icon color="grey" name="fa-solid fa-clock" style="margin-right: 10px"/>
+                    <b>
+                      <i>
+                        {{ formatTime(schedule.start_time) }}
+                        -
+                        {{ formatTime(schedule.end_time) }}
+                      </i>
+                      :
+                      {{ schedule.title }}
+                    </b>
+                  </p>
+                  <p>
+                    <q-icon color="grey" name="fa-solid fa-location-dot" style="margin-right: 10px"/>
+                    {{ schedule.location_other_name }}
+                  </p>
+                  <p v-if="schedule.elements?.length > 0">
+                    <q-icon color="grey" name="fa-solid fa-users"/>
+                    <span v-for="(element, index) in schedule.elements" style="margin-left: 10px"
+                          :class="element.user_id === auth.id?'ofMe' : 'member'">
+                    {{ element.name }} <span v-if="index < schedule.elements.length - 1">,</span></span>
+                  </p>
+                </template>
               </td>
               <td :class="index2===schedules[formatFullDate(day)].length-1 ? 'borderSolid leaderInf':'borderDotted leaderInf'">
                 <span :class="schedule.leader_id === auth.id?'ofMe' : 'member'">{{ schedule.leader_orther_name }}</span>
@@ -103,6 +136,30 @@ width: 200px;
         </table>
       </div>
     </div>
+    <q-dialog v-model="visibleDialogConfirmAccept" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">Bạn có chắc chắn phê duyệt lịch này?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Đóng" color="primary" @click="visibleDialogConfirmAccept = false" v-close-popup/>
+          <q-btn label="Đồng ý" color="green" @click="handleAccept" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="visibleDialogConfirmCancel" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">Bạn có chắc chắn hủy lịch này?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Đóng" color="primary" @click="visibleDialogConfirmCancel = false" v-close-popup/>
+          <q-btn label="Đồng ý" color="red" @click="handleCancel" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -134,10 +191,14 @@ export default defineComponent({
       }
     });
     const store = useStore()
-    const router = useRoute()
+    const route = useRoute()
+    const router = useRouter()
     const loadingRoles = ref<boolean>(false)
+    const visibleDialogConfirmAccept = ref<boolean>(false)
+    const visibleDialogConfirmCancel = ref<boolean>(false)
     const schedules = ref<IScheduleResult[]>([])
     const days = ref([]);
+    const idScheduleHandle = ref('');
     const auth = store.getters["auth/getAuthUser"]
     const daysName = ref([
       'Thứ hai',
@@ -174,8 +235,8 @@ export default defineComponent({
         payload.start_time = moment().startOf('week').isoWeekday(1).format("YYYY-MM-DD")
         payload.end_time = moment().startOf('week').isoWeekday(1).add(6, 'days').format("YYYY-MM-DD")
       }
-      if (router.params?.id){
-        payload.department_id = router.params?.id
+      if (route.params?.id){
+        payload.department_id = route.params?.id
       }
 
       api.getScheduleAcademy<IPaginate<IUserResult[]>>(payload).then(res => {
@@ -197,6 +258,45 @@ export default defineComponent({
         dateTemp = moment(dateTemp).add(1, 'days');
       }
     }
+    const confirmAccept = (id): void => {
+      visibleDialogConfirmAccept.value = true
+      idScheduleHandle.value = id
+
+    }
+    const confirmCancel = (id): void => {
+      visibleDialogConfirmCancel.value = true
+      idScheduleHandle.value = id
+
+    }
+
+    const handleAccept = (): void => {
+      loadingRoles.value = true
+      api.acceptSchedule(idScheduleHandle.value).then(res => {
+        eventBus.$emit('notify-success', 'Phê duyệt lịch thành công')
+        getListScheduleByWeek()
+      }).catch(() => {
+        $q.notify({
+          icon: 'report_problem',
+          message: 'Không tải được danh sách lịch!',
+          color: 'negative',
+          position: 'top-right'
+        })
+      }).finally(() => loadingRoles.value = false)
+    }
+    const handleCancel = (): void => {
+      loadingRoles.value = true
+      api.cancelSchedule(idScheduleHandle.value).then(res => {
+        eventBus.$emit('notify-success', 'Hủy lịch thành công')
+        getListScheduleByWeek()
+      }).catch(() => {
+        $q.notify({
+          icon: 'report_problem',
+          message: 'Không tải được danh sách lịch!',
+          color: 'negative',
+          position: 'top-right'
+        })
+      }).finally(() => loadingRoles.value = false)
+    }
 
     onMounted((): void => {
       eventBus.$on('notify-success', (message: string) => {
@@ -210,7 +310,7 @@ export default defineComponent({
       selectWeek()
       getListScheduleByWeek()
     })
-    watch(router, () => {
+    watch(route, () => {
       getListScheduleByWeek()
     })
     watch(searchDate, (value) => {
@@ -227,13 +327,21 @@ export default defineComponent({
       loadingRoles,
       days,
       router,
+      route,
       daysName,
       formatDate,
       schedules,
       formatFullDate,
       formatTime,
       auth,
-      searchDate
+      searchDate,
+      confirmAccept,
+      visibleDialogConfirmAccept,
+      visibleDialogConfirmCancel,
+      handleAccept,
+      handleCancel,
+      idScheduleHandle,
+      confirmCancel
     }
   }
 })
@@ -337,5 +445,14 @@ export default defineComponent({
     top: 10px;
     right: 10px;
   }
+}
+.today{
+  background: #cdedff8a;
+}
+.accepted{
+  background: #ddf4dd;
+}
+.closed{
+  background: #b7b7b7;
 }
 </style>
