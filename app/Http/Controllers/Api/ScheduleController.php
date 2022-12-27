@@ -66,19 +66,19 @@ class ScheduleController extends Controller
     {
         try {
             $data = $request->all();
-            $leader = User::where('user_name', $data['leader_name'])->first();
+            $leader = User::where('user_name', $data['leader_orther_name'])->first();
             if ($leader){
                 $data['leader_id']=$leader->id;
                 $data['leader_orther_name']=$leader->user_name;
             }else{
-                $data['leader_orther_name']=$data['leader_name'];
+                $data['leader_orther_name']=$data['leader_orther_name'];
             }
-            $location = Location::where('name', $data['location_name'])->first();
+            $location = Location::where('name', $data['location_other_name'])->first();
             if ($location){
                 $data['location_id']=$location->id;
                 $data['location_other_name']=$location->name;
             }else{
-                $data['location_other_name']=$data['location_name'];
+                $data['location_other_name']=$data['location_other_name'];
             }
             $schedule = Schedule::create(array_merge($data, [
                 'created_by' => auth()->id(),
@@ -195,8 +195,10 @@ class ScheduleController extends Controller
         try {
             $schedule = Schedule::find($id);
             if ($schedule){
-                return $this->responseSuccess(['schedule' => $schedule]);
+                $elements = Element::where('schedule_id', $id)->get()->pluck('name')->toArray();
+                return $this->responseSuccess(['schedule' => $schedule, 'elements'=>$elements]);
             }
+            return $this->responseError();
 
         } catch (\Exception $exception) {
             Log::error('Error delete department', [

@@ -305,6 +305,7 @@ export default {
             url: `/schedules/${id}`
         })
     },
+
     getScheduleAcademy<T>(params: object = {}): AxiosPromise<IResult<T>> {
         return apiAxios({
             method: 'get',

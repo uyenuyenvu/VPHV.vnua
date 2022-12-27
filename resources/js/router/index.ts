@@ -20,6 +20,12 @@ const routeSchedule: Array<RouteRecordRaw> = [
         component: () => import('../pages/Schedule/Detail.vue')
     },
     {
+        path: ':id/edit',
+        name: 'ScheduleUpdate',
+        component: () => import('../pages/Schedule/ScheduleCreate.vue'),
+        meta: {isAuthenticated: true},
+    },
+    {
         path: '/create',
         name: 'ScheduleCreate',
         component: () => import('../pages/Schedule/ScheduleCreate.vue'),

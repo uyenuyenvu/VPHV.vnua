@@ -29,16 +29,16 @@
                 <q-select
                     emit-value
                     map-options
-                    :ref="refInput.location_name"
+                    :ref="refInput.location_other_name"
                     borderless
                     dense
                     use-input
                     outlined
-                    v-model="location_name"
+                    v-model="location_other_name"
                     @new-value="createValue"
                     @filter="filterFn"
                     :options="locationNameOptions"
-                    :rules="rule.location_name"
+                    :rules="rule.location_other_name"
                 />
               </div>
               <div class="col">
@@ -77,16 +77,16 @@
                 <q-select
                     emit-value
                     map-options
-                    :ref="refInput.leader_name"
+                    :ref="refInput.leader_orther_name"
                     borderless
                     dense
                     use-input
                     outlined
-                    v-model="leader_name"
+                    v-model="leader_orther_name"
                     @new-value="createValueLeader"
                     @filter="filterFnLeader"
                     :options="leaderNameOptions"
-                    :rules="rule.leader_name"
+                    :rules="rule.leader_orther_name"
                 />
               </div>
             </div>
@@ -266,8 +266,8 @@ export default defineComponent({
       title: ref<string>(""),
       start_time: ref<string>(""),
       end_time: ref<string>(""),
-      location_name: ref<string>(""),
-      leader_name: ref(""),
+      location_other_name: ref<string>(""),
+      leader_orther_name: ref(""),
       description: ref<string>(""),
       type: ref<boolean>(true),
       is_public: ref<boolean>(true),
@@ -287,12 +287,12 @@ export default defineComponent({
     const files = ref<any[]>([])
 
     const elementNameOptions = ref<string[]>([])
-    const lstElement = ref( ['1'])
+    const lstElement = ref( ['1','2'])
 
     const refInput: any = {
       title: ref<any>(null),
       start_time: ref<any>(null),
-      leader_name: ref<any>(null),
+      leader_orther_name: ref<any>(null),
       element: ref<any>(null),
       department_id: ref<any>(null),
     };
@@ -302,7 +302,7 @@ export default defineComponent({
         (val: any) =>
             (val && val.length > 0) || "Trường tiêu đề không được bỏ trống!",
       ],
-      location_name: [
+      location_other_name: [
         (val: any) =>
             (val && val.length > 0) || "Trường địa chỉ không được bỏ trống!",
       ],
@@ -310,7 +310,7 @@ export default defineComponent({
         (val: any) =>
             (val && val.length > 0) || "Trường thời gian bắt đầu không được bỏ trống!",
       ],
-      leader_name: [
+      leader_orther_name: [
         (val: any) =>
             (val && val.length > 0) || "Trường người chủ trì không được bỏ trống!",
       ],
@@ -600,10 +600,11 @@ export default defineComponent({
           });
     };
 
-    const handleGetUser = (id: string): void => {
+    const handleGetSchedule = (id: string): void => {
       $q.loading.show()
-      api.getUser<IUserResult>(id).then(res => {
-        const data = _.get(res, 'data.data.user', '')
+      api.getSchedule<IScheduleResult>(id).then(res => {
+        const data = _.get(res, 'data.data.schedule', '')
+        lstElement.value = _.get(res, 'data.data.elements', [''])
         for (const key in user) {
           if (['is_leader', 'is_super_admin'].includes(key))
             user[key].value = data[key] ? true : false
@@ -612,7 +613,7 @@ export default defineComponent({
       }).catch(() => {
         $q.notify({
           icon: 'report_problem',
-          message: 'Không tải được dữ liệu user!',
+          message: 'Không tải được dữ liệu lịch!',
           color: 'negative',
           position: 'top-right'
         })
@@ -628,9 +629,9 @@ export default defineComponent({
       }
     }
 
-    const redirectRouter = (nameRoute: string, params: object = {}): void => {
-      router.push({name: nameRoute, params: params});
-    };
+    const redirectRouter = (nameRoute: string, params: any | [] = null): void => {
+      router.push({name: nameRoute, params: params})
+    }
 
     const addFile = (file:any[]) : void =>{
       file.forEach((item)=>{
@@ -647,9 +648,10 @@ export default defineComponent({
       getListDepartment();
       getListLocation();
       getListUser();
+      console.log(router)
       idSchedule.value = <string>route.params.id
       if (idSchedule.value) {
-        handleGetUser(idSchedule.value)
+        handleGetSchedule(idSchedule.value)
       }
     });
     return {

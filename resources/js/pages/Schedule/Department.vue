@@ -13,7 +13,7 @@ width: 200px;
         >
       </div>
       <div class="item-header">
-        <q-btn no-caps @click="redirectRouter('ScheduleCreate')" color="secondary" class="q-mr-sm">
+        <q-btn no-caps @click="redirectRouter('ScheduleCreate')" color="secondary" class="q-mr-sm" v-if="auth.full_name">
           <q-icon name="fa-solid fa-plus" class="q-mr-sm" size="xs"></q-icon>
           Thêm lịch
         </q-btn>
@@ -46,21 +46,21 @@ width: 200px;
                 'closed': schedule.close_by !== null
               }"
               class="contentInf">
-                <div class="iconMenu">
+                <div class="iconMenu"  v-if="schedule.status.toString() !== '1' && schedule.close_by === null && auth.full_name">
                   <q-btn  color="white" text-color="black" icon="menu">
                     <q-menu
                         transition-show="rotate"
                         transition-hide="rotate"
                     >
                       <q-list style="min-width: 100px">
-                        <q-item clickable>
+                        <q-item clickable v-if="auth.id === schedule.create_by || auth.is_super_admin.toString() === '1'"
+                                @click="redirectRouter('ScheduleUpdate', {id: schedule.id})" >
                           <q-item-section>Chỉnh sửa</q-item-section>
                         </q-item>
-                        <q-item clickable @click="confirmAccept(schedule.id)" >
+                        <q-item clickable @click="confirmAccept(schedule.id)" v-if="auth.is_super_admin.toString() === '1'">
                           <q-item-section>Phê duyệt</q-item-section>
                         </q-item>
-                        <q-separator />
-                        <q-item clickable  @click="confirmCancel(schedule.id)" v-if="schedule.status.toString() !== '1'">
+                        <q-item clickable  @click="confirmCancel(schedule.id)" v-if="auth.id === schedule.create_by || auth.is_super_admin.toString() === '1'">
                           <q-item-section>Hủy lịch</q-item-section>
                         </q-item>
                       </q-list>
@@ -211,8 +211,9 @@ export default defineComponent({
     ])
     const searchDate = ref(moment().format('YYYY-MM-DD'))
 
-    const redirectRouter = (nameRoute: string): void => {
-      router.push({name: nameRoute})
+    const redirectRouter = (nameRoute: string, params: any | [] = null): void => {
+      console.log(params)
+      router.push({name: nameRoute, params: params})
     }
     const formatDate = (date): string => {
       return moment(date).format("DD / MM");

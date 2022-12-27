@@ -46,6 +46,7 @@ Route::get('/departments/all', [DepartmentController::class, 'getAll']);
 Route::get('/schedules/', [ScheduleController::class, 'index']);
 Route::get('/schedules/week', [ScheduleController::class, 'scheduleByWeek']);
 Route::put('/schedules/accept/{id}', [ScheduleController::class, 'acceptSchedule']);
+Route::get('/schedules/{id}', [ScheduleController::class, 'show']);
 Route::put('/schedules/cancel/{id}', [ScheduleController::class, 'cancelSchedule']);
 Route::group(['middleware' => ['jwt.auth', 'auth.admin']], function () {
     Route::prefix('users')->group(function () {
