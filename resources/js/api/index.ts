@@ -306,6 +306,14 @@ export default {
         })
     },
 
+    checkExist<T>(params: object = {}): AxiosPromise<IResult<T>> {
+        return apiAxios({
+            method: 'get',
+            url: `/schedules/checkExist`,
+            params: params
+        })
+    },
+
     getScheduleAcademy<T>(params: object = {}): AxiosPromise<IResult<T>> {
         return apiAxios({
             method: 'get',

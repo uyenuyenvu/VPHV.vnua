@@ -95,13 +95,17 @@ width: 200px;
                   <p>
                     <q-icon color="grey" name="fa-solid fa-clock" style="margin-right: 10px"/>
                     <b>
+
                       <i>
-                        {{ formatTime(schedule.start_time) }}
+                          <strike v-if="schedule.old_start_time" style="color: red">{{ formatTime(schedule.old_start_time) }}</strike>
+                        <span>{{ formatTime(schedule.start_time) }}</span>
                         -
-                        {{ formatTime(schedule.end_time) }}
+                          <strike v-if="schedule.old_end_time" style="color: red">{{ formatTime(schedule.old_end_time) }}</strike>
+                          <span>{{ formatTime(schedule.end_time) }}</span>
                       </i>
                       :
-                      {{ schedule.title }}
+                        <strike v-if="schedule.old_title" style="color: red">{{ schedule.old_title }}</strike>
+                        <span>{{ schedule.title }}</span>
                     </b>
                   </p>
                   <p>
@@ -117,7 +121,7 @@ width: 200px;
                 </template>
               </td>
               <td :class="index2===schedules[formatFullDate(day)].length-1 ? 'borderSolid leaderInf':'borderDotted leaderInf'">
-                <span :class="schedule.leader_id === auth.id?'ofMe' : 'member'">{{ schedule.leader_orther_name }}</span>
+                  <span :class="schedule.leader_id === auth.id?'ofMe' : 'member'"><strike style="color:red;" v-if="schedule.old_leader_orther_name">{{schedule.old_leader_orther_name}} <br></strike>{{ schedule.leader_orther_name }}</span>
               </td>
             </tr>
             <tr v-if="!schedules[formatFullDate(day)]">
@@ -134,6 +138,31 @@ width: 200px;
           </template>
           </tbody>
         </table>
+
+          <div class="lstDetail">
+              <div class="itemDetail">
+                  <div class="dotDetail today"></div>
+                  Lịch hôm nay
+              </div>
+              <div class="itemDetail">
+                  <div class="dotDetail closed"></div>
+                  Lịch bị hủy
+              </div>
+              <div class="itemDetail">
+                  <div class="dotDetail accepted"></div>
+                  Lịch đã duyệt
+              </div>
+              <div class="itemDetail">
+                  <div class="dotDetailText">
+                      <strike style="color: red">abc</strike>
+                  </div>
+                  Thông tin thay đổi
+              </div>
+              <div class="itemDetail">
+                  <div class="dotDetail" style="background-color: #ffc0cb"></div>
+                  Lịch của tôi
+              </div>
+          </div>
       </div>
     </div>
     <q-dialog v-model="visibleDialogConfirmAccept" persistent>
@@ -455,5 +484,30 @@ export default defineComponent({
 }
 .closed{
   background: #b7b7b7;
+}
+.lstDetail{
+    display: flex;
+    justify-content: space-evenly;
+    padding: 50px 0;
+    .itemDetail{
+        display: flex;
+        align-items: center;
+        .dotDetail{
+            width: 30px;
+            height: 30px;
+            border: 0.5px solid gray;
+            margin-right: 10px;
+        }
+        .dotDetailText{
+            width: 30px;
+            height: 30px;
+            border: 0.5px solid gray;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            align-content: center;
+            justify-content: center;
+        }
+    }
 }
 </style>

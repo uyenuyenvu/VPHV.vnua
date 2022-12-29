@@ -15,6 +15,7 @@ use App\Traits\ResponseTrait;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ScheduleController extends Controller
@@ -134,6 +135,25 @@ class ScheduleController extends Controller
             return $this->responseError();
         }
     }
+
+    public function checkUserInSchedule(Request $request){
+        $user = User::where('user_name', $request->input('name'))->first();
+        if ($user){
+            $schedule = DB::table('element_schedules')
+                            ->join('schedules', 'element_schedules.schedule_id','=','schedules.id')
+                            ->where('element_schedules.user_id', $user->id)
+                            ->orWhereBetween('schedules.start_time', [$request->input('start_time'), $request->input('end_time')])
+                            ->orWhereBetween('schedules.start_time', [$request->input('start_time'), $request->input('end_time')])
+                            ->get();
+            if (count($schedule) > 0){
+                return $this->responseSuccess(['schedule' => false]);
+            }
+            return $this->responseSuccess(['schedule' => true]);
+        }else{
+            return $this->responseSuccess(['schedule' => true]);
+        }
+    }
+
     public function cancelSchedule($id){
         try {
             $schedule = Schedule::find($id);
@@ -156,16 +176,54 @@ class ScheduleController extends Controller
         }
     }
 
-    public function update(UpdateDepartmentRequest $request, $id): JsonResponse
+    public function update(Request $request, $id): JsonResponse
     {
         try {
             $data = $request->all();
-            $department = $this->departmentRepository->findById($id);
-            $department?->fill(array_merge($data, [
+            $schedule = Schedule::find($id);
+            $schedule?->fill(array_merge($data, [
                 'updated_by' => auth()->id(),
             ]));
-            $this->departmentRepository->createOrUpdate($department);
+            $schedule->update($data);
+            if ($schedule){
+                $leader = User::where('user_name', $data['leader_orther_name'])->first();
+                if ($leader){
+                    $data['leader_id']=$leader->id;
+                    $data['leader_orther_name']=$leader->user_name;
+                }else{
+                    $data['leader_orther_name']=$data['leader_orther_name'];
+                }
+                $location = Location::where('name', $data['location_other_name'])->first();
+                if ($location){
+                    $data['location_id']=$location->id;
+                    $data['location_other_name']=$location->name;
+                }else{
+                    $data['location_other_name']=$data['location_other_name'];
+                }
+                $elements = Element::where('schedule_id', $schedule->id)->get();
+                foreach ($elements as $element){
+                    $i = Element::find($element->id);
+                    $i->delete();
+                }
 
+                $elements = $request->input('elements');
+                foreach ($elements as $element){
+                    $user = User::where('user_name', $element)->first();
+                    if ($user){
+                        $newElement = Element::create([
+                            'user_id'=>$user->id,
+                            'schedule_id'=> $schedule->id,
+                            'name'=>$element
+                        ]);
+                    }else{
+                        $newElement = Element::create([
+                            'schedule_id'=> $schedule->id,
+                            'name'=>$element
+                        ]);
+                    }
+
+                }
+            }
             return $this->responseSuccess();
         } catch (\Exception $exception) {
             Log::error('Error update department', [

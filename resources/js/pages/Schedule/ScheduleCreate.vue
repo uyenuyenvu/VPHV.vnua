@@ -46,7 +46,9 @@
                 >Thời gian bắt đầu <span class="required">*</span></label
                 >
                 <div class="input-time">
-                  <input type="datetime-local" name="start_time" v-model="start_time">
+                  <input type="datetime-local" name="start_time" v-model="start_time" :rules="rule.start_time"
+                         :error-message="getValidationErrors('start_time')"
+                         :error="hasValidationErrors('start_time')">
                 </div>
 
               </div>
@@ -55,7 +57,10 @@
                 >Thời gian kết thúc </label
                 >
                 <div class="input-time">
-                  <input type="datetime-local" v-model="end_time">
+                  <input type="datetime-local" name="end_time"  v-model="end_time"
+                         :rules="rule.end_time"
+                         :error-message="getValidationErrors('end_time')"
+                         :error="hasValidationErrors('end_time')">
                 </div>
               </div>
             </div>
@@ -102,6 +107,7 @@
                     :searchable="true"
                     :create-option="true"
                     :options="elementNameOptions"
+                    @select="selectElement"
                 />
               </div>
             </div>
@@ -224,6 +230,30 @@
         </div>
       </div>
     </div>
+      <q-dialog v-model="visibleDialogConfirmExist" persistent>
+          <q-card>
+              <q-card-section class="row items-center">
+                  <span class="q-ml-sm">Cán bộ <b>{{nameExist}}</b> đã ở trong lịch trình khác <br> Bạn có chắc chắn muốn thêm?</span>
+              </q-card-section>
+
+              <q-card-actions align="right">
+                  <q-btn flat label="Hủy" color="primary" @click="notAddElement" v-close-popup/>
+                  <q-btn label="Đồng ý" color="red" @click="visibleDialogConfirmExist = false" v-close-popup/>
+              </q-card-actions>
+          </q-card>
+      </q-dialog>
+      <q-dialog v-model="visibleDialogConfirmExistLeader" persistent>
+          <q-card>
+              <q-card-section class="row items-center">
+                  <span class="q-ml-sm">Cán bộ <b>{{nameExist}}</b> đã ở trong lịch trình khác <br> Bạn có chắc chắn muốn thêm?</span>
+              </q-card-section>
+
+              <q-card-actions align="right">
+                  <q-btn flat label="Hủy" color="primary" @click="notAddAdmin" v-close-popup/>
+                  <q-btn label="Đồng ý" color="red" @click="visibleDialogConfirmExistLeader = false" v-close-popup/>
+              </q-card-actions>
+          </q-card>
+      </q-dialog>
   </div>
 </template>
 
@@ -285,13 +315,18 @@ export default defineComponent({
     const leaderIds = ref<string[]>([]);
     const leaderNameOptions = ref<string[]>([]);
     const files = ref<any[]>([])
+    const userOld = ref<any>({})
+      const visibleDialogConfirmExist = ref<boolean>(false)
+      const visibleDialogConfirmExistLeader = ref<boolean>(false)
+      const nameExist = ref<string>('')
 
-    const elementNameOptions = ref<string[]>([])
+      const elementNameOptions = ref<string[]>([])
     const lstElement = ref( ['1','2'])
 
     const refInput: any = {
       title: ref<any>(null),
       start_time: ref<any>(null),
+      end_time: ref<any>(null),
       leader_orther_name: ref<any>(null),
       element: ref<any>(null),
       department_id: ref<any>(null),
@@ -309,6 +344,10 @@ export default defineComponent({
       start_time: [
         (val: any) =>
             (val && val.length > 0) || "Trường thời gian bắt đầu không được bỏ trống!",
+      ],
+        end_time: [
+        (val: any) =>
+            (val && val > user.start_time.value) || "Trường thời gian bắt đầu không được bỏ trống!",
       ],
       leader_orther_name: [
         (val: any) =>
@@ -415,10 +454,32 @@ export default defineComponent({
         data.elements = lstElement.value;
         data.type = payload.type?1:0
         if (idSchedule.value) {
+            if (userOld.value.title !== user.title.value){
+                data.old_title = userOld.value.title
+            }
+            if (userOld.value.start_time !== user.start_time.value){
+                data.old_start_time = userOld.value.start_time
+            }
+            if (userOld.value.end_time !== user.end_time.value){
+                data.old_end_time = userOld.value.end_time
+            }
+            if (userOld.value.location_other_name !== user.location_other_name.value){
+                data.old_location_other_name = userOld.value.location_other_name
+            }
+            if (userOld.value.leader_orther_name !== user.leader_orther_name.value){
+                data.old_leader_orther_name = userOld.value.leader_orther_name
+            }
+            if (userOld.value.description !== user.description.value){
+                data.old_description = userOld.value.description
+            }
+            if (userOld.value.department_id !== user.department_id.value){
+                data.old_department_id = userOld.value.department_id
+            }
+            console.log(data)
           api.updateSchedule(data, idSchedule.value).then(res => {
             if (res) {
-              eventBus.$emit('notify-success', 'Cập nhật người dùng thành công')
-              redirectRouter('User')
+              eventBus.$emit('notify-success', 'Cập nhật lịch thành công')
+                redirectRouter('AcademySchedule', {id: res.data?.data?.schedule?.id})
             }
           }).catch(error => {
             let errors = _.get(error.response, 'data.error', {})
@@ -610,6 +671,8 @@ export default defineComponent({
             user[key].value = data[key] ? true : false
           else user[key].value = data[key]
         }
+          userOld.value = _.cloneDeep(user)
+
       }).catch(() => {
         $q.notify({
           icon: 'report_problem',
@@ -623,12 +686,83 @@ export default defineComponent({
     for (const key in payload) {
       if (refInput[key]) {
         watch(user[key], (): void => {
-          resetValidateErrors(key)
+            resetValidateErrors(key)
           refInput[key].value?.resetValidation()
         })
       }
     }
 
+      watch(user.end_time, (): void => {
+          if (user.end_time.value < user.start_time.value){
+              $q.notify({
+                  icon: 'report_problem',
+                  message: 'Thời gian kết thúc phải sau thời gian bắt đâu',
+                  color: 'negative',
+                  position: 'top-right'
+              })
+          }
+      })
+      watch(user.start_time, (): void => {
+          if (user.end_time.value < user.start_time.value){
+              $q.notify({
+                  icon: 'report_problem',
+                  message: 'Thời gian bắt đầu phải trước thời gian kết thúc',
+                  color: 'negative',
+                  position: 'top-right'
+              })
+          }
+      })
+      watch(user.leader_orther_name, (value): void => {
+          if (user.start_time.value && user.end_time.value && !_.isEmpty(value)){
+              const params = {
+                  name: value,
+                  start_time: user.start_time.value,
+                  end_time: user.end_time.value
+              }
+              api.checkExist<any>(params).then(res => {
+                  const check = _.get(res, 'data.data.schedule', true)
+                  if (!check){
+                      console.log(lstElement.value)
+                      nameExist.value = value
+                      visibleDialogConfirmExistLeader.value = true
+                  }
+              }).catch(() => {
+                  $q.notify({
+                      icon: 'report_problem',
+                      message: 'Không tải được dữ liệu lịch!',
+                      color: 'negative',
+                      position: 'top-right'
+                  })
+              }).finally(() => $q.loading.hide())
+          }
+
+      })
+
+      const selectElement = (value, id):void => {
+        if (user.start_time.value && user.end_time.value){
+            const params = {
+                name: value,
+                start_time: user.start_time.value,
+                end_time: user.end_time.value
+            }
+            console.log(value)
+            api.checkExist<any>(params).then(res => {
+                const check = _.get(res, 'data.data.schedule', true)
+                if (!check){
+                    console.log(lstElement.value)
+                    nameExist.value = value
+                    visibleDialogConfirmExist.value = true
+                }
+            }).catch(() => {
+                $q.notify({
+                    icon: 'report_problem',
+                    message: 'Không tải được dữ liệu lịch!',
+                    color: 'negative',
+                    position: 'top-right'
+                })
+            }).finally(() => $q.loading.hide())
+        }
+      }
     const redirectRouter = (nameRoute: string, params: any | [] = null): void => {
       router.push({name: nameRoute, params: params})
     }
@@ -637,6 +771,12 @@ export default defineComponent({
       file.forEach((item)=>{
         files.value.push(item)
       })
+    }
+    const notAddElement = () : void =>{
+        lstElement.value = lstElement.value.splice(lstElement.value.length - 1, 1)
+    }
+    const notAddAdmin = () : void =>{
+        user.leader_orther_name.value = ''
     }
     const removeFile = (file:any[]) : void =>{
       files.value = files.value.filter(item => item !== file[0])
@@ -656,6 +796,10 @@ export default defineComponent({
     });
     return {
       handleSave,
+        selectElement,
+        notAddElement,
+        notAddAdmin,
+        userOld,
       description,
       ticked,
       permissionArray,
@@ -689,7 +833,10 @@ export default defineComponent({
       addFile,
       removeFile,
       files,
-      auth
+      auth,
+        nameExist,
+        visibleDialogConfirmExist,
+        visibleDialogConfirmExistLeader
     };
   },
 });
