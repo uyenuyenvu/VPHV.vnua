@@ -93,7 +93,7 @@
             <p style="border: 1px solid grey; padding: 2px 10px 0px; border-radius: 3px;">{{ getValueLodash(classes, 'class_code', '') }}</p>
           </div>
           <div style="line-height:30px; width: 30%">
-            <span style="font-weight: bold;" class="">Phòng ban</span>
+            <span style="font-weight: bold;" class="">Đơn vị</span>
             <p style="border: 1px solid grey; padding: 2px 10px 0px; border-radius: 3px;">{{ getValueLodash(classes, 'department_id', '') }}</p>
           </div>
           <div style="line-height:30px; width: 30%">

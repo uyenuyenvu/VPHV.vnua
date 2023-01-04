@@ -30,7 +30,6 @@ class StoreUserRequest extends BaseRequest
     {
         return [
             'email' => 'required|unique:users',
-            'password' => 'required',
             'full_name' => 'required',
             'user_name' => 'required|unique:users'
         ];
@@ -39,7 +38,6 @@ class StoreUserRequest extends BaseRequest
     public function attributes(): array
     {
         return [
-            'password' => 'mật khẩu',
             'user_name' => 'tên tài khoản',
             'full_name' => 'họ và tên',
         ];

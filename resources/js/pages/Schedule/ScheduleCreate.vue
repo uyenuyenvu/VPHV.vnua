@@ -125,11 +125,11 @@
                   >Loại lịch trình:</label
                   >
                   <q-toggle v-model="type"/>
-                  <label class="txt-green">{{type?'Lịch học viện' : 'Lịch phòng ban'}}</label>
+                  <label class="txt-green">{{type?'Lịch học viện' : 'Lịch Đơn vị'}}</label>
                   <template v-if="!type">
                     <br>
                     <label class="text-bold"
-                    >Phòng ban<span class="required">*</span></label
+                    >Đơn vị<span class="required">*</span></label
                     >
                     <div>
                       <q-select
@@ -153,11 +153,11 @@
                   >Loại lịch trình:</label
                   >
                   <q-toggle v-model="type"/>
-                  <label class="txt-green">{{type?'Lịch học viện' : 'Lịch phòng ban'}}</label>
+                  <label class="txt-green">{{type?'Lịch học viện' : 'Lịch Đơn vị'}}</label>
                   <template v-if="!type">
                     <br>
                     <label class="text-bold"
-                    >Phòng ban<span class="required">*</span></label
+                    >Đơn vị<span class="required">*</span></label
                     >
                     <div>
                       <q-select
@@ -354,7 +354,7 @@ export default defineComponent({
             (val && val.length > 0) || "Trường người chủ trì không được bỏ trống!",
       ],
       department_id: [
-        (val: any) => val || "Trường phòng ban không được bỏ trống!",
+        (val: any) => val || "Trường Đơn vị không được bỏ trống!",
       ],
     };
 
@@ -362,7 +362,7 @@ export default defineComponent({
 
     const ruleSelect = (val: any) => {
       if (val === null) {
-        return "Trường phòng ban không được bỏ trống!";
+        return "Trường Đơn vị không được bỏ trống!";
       }
     };
 

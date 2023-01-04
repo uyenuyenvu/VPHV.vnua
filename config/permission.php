@@ -63,27 +63,27 @@ return [
 
     [
         'code' => 'department-index',
-        'name' => 'Xem danh sách phòng ban',
+        'name' => 'Xem danh sách đơn vị',
         'group_code' => 'department',
-        'description' => 'Có quyền xem danh sách phòng ban'
+        'description' => 'Có quyền xem danh sách đơn vị'
     ],
     [
         'code' => 'department-create',
-        'name' => 'Tạo mới phòng ban',
+        'name' => 'Tạo mới đơn vị',
         'group_code' => 'department',
-        'description' => 'Có quyền tạo mới phòng ban'
+        'description' => 'Có quyền tạo mới đơn vị'
     ],
     [
         'code' => 'department-update',
-        'name' => 'Cập nhật phòng ban',
+        'name' => 'Cập nhật đơn vị',
         'group_code' => 'department',
-        'description' => 'Có quyền cập nhật phòng ban'
+        'description' => 'Có quyền cập nhật đơn vị'
     ],
     [
         'code' => 'department-delete',
-        'name' => 'Xoá phòng ban',
+        'name' => 'Xoá đơn vị',
         'group_code' => 'department',
-        'description' => 'Có quyền xóa phòng ban'
+        'description' => 'Có quyền xóa đơn vị'
     ],
 
     [
@@ -112,9 +112,9 @@ return [
     ],
     [
         'code' => 'schedule-index',
-        'name' => 'xem lịch của phòng ban mình',
+        'name' => 'xem lịch của đơn vị mình',
         'group_code' => 'schedule',
-        'description' => 'Có quyền xem lịch công tác của phòng ban mình'
+        'description' => 'Có quyền xem lịch công tác của đơn vị mình'
     ],
     [
         'code' => 'schedule-create',

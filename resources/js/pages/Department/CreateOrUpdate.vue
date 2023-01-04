@@ -2,11 +2,11 @@
     <q-dialog v-model="isShow" @hide="closeDialog">
         <q-card style="width: 300px">
             <q-card-section>
-                <div class="text-h6">Thêm mới phòng ban</div>
+                <div class="text-h6">Thêm mới Đơn vị</div>
             </q-card-section>
             <q-card-section class="row items-center" style="width: 100%">
                 <label for="name" class="text-bold"
-                >Tên phòng ban <span class="required">*</span></label
+                >Tên Đơn vị <span class="required">*</span></label
                 >
                 <q-input
                     class="full-width"
@@ -15,13 +15,13 @@
                     v-model="name"
                     id="name"
                     ref="nameRef"
-                    :rules="autoGenerateRule(`tên phòng ban`)"
+                    :rules="autoGenerateRule(`tên Đơn vị`)"
                     :error-message="getValidationErrors('name')"
                     :error="hasValidationErrors('name')"
                     @update:model-value="updateNameDepartment"
                 />
                 <label for="code" class="text-bold"
-                >Mã phòng ban <span class="required">*</span></label
+                >Mã Đơn vị <span class="required">*</span></label
                 >
                 <q-input
                     class="full-width"
@@ -30,7 +30,7 @@
                     v-model="code"
                     id="code"
                     ref="codeRef"
-                    :rules="autoGenerateRule(`mã phòng ban`)"
+                    :rules="autoGenerateRule(`mã Đơn vị`)"
                     :error-message="getValidationErrors('code')"
                     :error="hasValidationErrors('code')"
                 ></q-input>
@@ -130,7 +130,7 @@ export default ({
                         .then(() => {
                             getListDepartment();
                             closeDialog();
-                            generateNotify("Sửa thành công phòng ban", true)
+                            generateNotify("Sửa thành công Đơn vị", true)
                         })
                         .catch(() => {
                             generateNotify("Sửa mới thất bại")
@@ -143,10 +143,10 @@ export default ({
                         .then(() => {
                             getListDepartment();
                             closeDialog();
-                            generateNotify("Thêm mới thành công phòng ban", true)
+                            generateNotify("Thêm mới thành công Đơn vị", true)
                         })
                         .catch(() => {
-                            generateNotify("Thêm mới thất bại phòng ban")
+                            generateNotify("Thêm mới thất bại Đơn vị")
                         })
                         .finally(() => {
                             $q.loading.hide()

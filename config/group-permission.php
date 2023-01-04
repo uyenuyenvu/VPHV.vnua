@@ -17,9 +17,9 @@ return [
         'description' => 'Quản lý toàn bộ chức năng liên quan đến vai trò'
     ],
     [
-        'name' => 'Quản lý phòng ban',
+        'name' => 'Quản lý đơn vị',
         'code' => 'department',
-        'description' => 'Quản lý toàn bộ chức năng liên quan đến phòng ban'
+        'description' => 'Quản lý toàn bộ chức năng liên quan đến đơn vị'
     ],
 
     [

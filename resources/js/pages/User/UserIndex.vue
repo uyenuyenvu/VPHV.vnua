@@ -106,7 +106,7 @@
                             <td class="text-left">{{ getValueLodash(user, 'phone', '') }}</td>
                             <td class="text-left">
                                 <q-badge v-if="getValueLodash(user, 'is_super_admin', 0) != 0" align="middle" color='blue'>Quản trị viên</q-badge>
-                                <q-badge v-if="getValueLodash(user, 'is_leader', 0) != 0" align="middle" color='green'>Trưởng phòng ban</q-badge>
+                                <q-badge v-if="getValueLodash(user, 'is_leader', 0) != 0" align="middle" color='green'>Trưởng đơn vị</q-badge>
                             </td>
                             <td class="text-center">
                                 <div class="inline cursor-pointer">

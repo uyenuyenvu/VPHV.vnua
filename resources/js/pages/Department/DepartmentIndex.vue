@@ -10,7 +10,7 @@
         icon="home"
         :to="{ name: 'Home' }"
       />
-      <q-breadcrumbs-el label="phòng ban" />
+      <q-breadcrumbs-el label="Đơn vị" />
     </q-breadcrumbs>
     <q-slide-transition>
       <q-card class="filter-wrapper" v-if="isFilter">
@@ -133,10 +133,10 @@
                 <q-checkbox v-model="checkboxAll" />
               </th>
               <th class="text-center" width="5%">STT</th>
-              <th class="text-left">Mã phòng ban</th>
-              <th class="text-left">Tên phòng ban</th>
+              <th class="text-left">Mã Đơn vị</th>
+              <th class="text-left">Tên Đơn vị</th>
               <th class="text-center">Ngày tạo</th>
-              <th class="text-center">Trưởng phòng ban</th>
+              <th class="text-center">Trưởng Đơn vị</th>
               <th class="text-left">Được tạo bởi</th>
               <th class="text-center">Tác vụ</th>
             </tr>

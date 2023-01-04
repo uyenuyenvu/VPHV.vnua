@@ -78,10 +78,10 @@ export default ({
                     getListDepartment();
                     closeDialog();
                     resetListIdDelete();
-                    generateNotify("Xóa thành công phòng ban", true)
+                    generateNotify("Xóa thành công Đơn vị", true)
                 })
                 .catch(() => {
-                    generateNotify("Không xóa được phòng ban")
+                    generateNotify("Không xóa được Đơn vị")
                 })
                 .finally(() => $q.loading.hide());
             } else {
@@ -91,10 +91,10 @@ export default ({
                     .then(() => {
                         getListDepartment();
                         closeDialog();
-                        generateNotify("Xóa thành công phòng ban", true)
+                        generateNotify("Xóa thành công Đơn vị", true)
                     })
                     .catch(() => {
-                        generateNotify("Không xóa được phòng ban")
+                        generateNotify("Không xóa được Đơn vị")
                     })
                     .finally(() => $q.loading.hide());
             }

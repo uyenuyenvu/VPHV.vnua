@@ -19,7 +19,6 @@
             <img src="/images/FITA.png" alt="">
             <div class="title-div">
               <div class="title-page">HỆ THỐNG ĐIỀU HÀNH TRỰC TUYẾN</div>
-              <div class="sub-title">eLive</div>
             </div>
           </div>
         </q-toolbar-title>
@@ -51,7 +50,7 @@
                     <div class="item-menu-right">
                     <router-link class="textLink" :to='{ name: "Department" }'
                       style="text-decoration: none; color: black;text-transform: capitalize; margin-right: 5px;">
-                        <q-icon color="grey" name="fa-solid fa-building-user" style="margin-right: 10px; margin-left: 20px"/>Phòng ban</router-link>
+                        <q-icon color="grey" name="fa-solid fa-building-user" style="margin-right: 10px; margin-left: 20px"/>Đơn vị</router-link>
                     </div>
                     <div class="item-menu-right">
                     <router-link class="textLink" :to='{ name: "Location" }'
@@ -111,7 +110,7 @@
               <q-icon color="grey" name="fa-solid fa-building-user"/>
             </q-item-section>
             <q-item-section>
-              <q-item-label>Lịch phòng ban</q-item-label>
+              <q-item-label>Lịch Đơn vị</q-item-label>
             </q-item-section>
           </q-item>
             <div
@@ -172,12 +171,12 @@ export default defineComponent({
           };
 
           api
-              .getDepartments<IPaginate<IDepartmentResult[]>>(payload)
+              .getAllDepartment<IPaginate<IDepartmentResult[]>>(payload)
               .then((res) => {
-                  departments.value = _.get(res, "data.data.department.data");
+                  departments.value = _.get(res, "data.data.departments");
                 })
               .catch(() => {
-                  generateNotify("Không tải được danh sách phòng ban")
+                  generateNotify("Không tải được danh sách đơn vị")
               })
               .finally(() => (loadingDepartments.value = false));
       };
@@ -224,7 +223,7 @@ export default defineComponent({
         loadingDepartments,
       links1: [
         {icon: 'fa-solid fa-home', text: 'Bảng điều khiển', routeName: 'Home'},
-        {icon: 'fa-solid fa-building-user', text: 'Quản lý phòng ban', routeName: 'Department'},
+        {icon: 'fa-solid fa-building-user', text: 'Quản lý đơn vị', routeName: 'Department'},
         {icon: 'fa-solid fa-users', text: 'Quản lý lớp học', routeName: 'Classes'},
       ],
 

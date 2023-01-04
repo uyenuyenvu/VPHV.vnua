@@ -78,7 +78,7 @@ export default defineComponent({
           page.value.perPage = _.get(res, "data.data.department.per_page", 0);
         })
         .catch(() => {
-            generateNotify("Không tải được danh sách phòng ban")
+            generateNotify("Không tải được danh sách đơn vị")
         })
         .finally(() => (loadingDepartments.value = false));
     };
@@ -151,7 +151,7 @@ export default defineComponent({
     );
 
     onMounted(() => {
-      store.commit(`home/${HomeMutationTypes.SET_TITLE}`, "Quản lý phòng ban");
+      store.commit(`home/${HomeMutationTypes.SET_TITLE}`, "Quản lý đơn vị");
       eventBus.$on("notify-success", (message: string) => {
         generateNotify(message, true)
       });

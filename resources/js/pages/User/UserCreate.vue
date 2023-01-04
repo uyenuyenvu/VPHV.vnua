@@ -32,7 +32,7 @@
                             </div>
                             <div class="col">
                                 <label for="name" class="text-bold"
-                                >Tên tài khoản <span class="required">*</span></label
+                                >Tên thường gọi <span class="required">*</span></label
                                 >
                                 <q-input
                                     :disable="idUser ? true : false"
@@ -80,30 +80,6 @@
                             </div>
                         </div>
                         <div class="form-group row gap-2 q-gutter-md">
-                            <div :class="idUser ? 'hidden col' : ' col' ">
-                                <label for="password" class="text-bold"
-                                >Mật khẩu<span class="required">*</span></label
-                                >
-                                <q-input
-                                    outlined
-                                    dense
-                                    v-model="password"
-                                    id="password"
-                                    :ref="refInput.password"
-                                    :rules="rule.password"
-                                    :error-message="getValidationErrors('password')"
-                                    :error="hasValidationErrors('password')"
-                                    :type="isPwd ? 'password' : 'text'"
-                                >
-                                    <template v-slot:append>
-                                        <q-icon
-                                            :name="isPwd ? 'visibility_off' : 'visibility'"
-                                            class="cursor-pointer"
-                                            @click="isPwd = !isPwd"
-                                        />
-                                    </template>
-                                </q-input>
-                            </div>
                             <div class="col" style="max-height: 63px">
                                 <label for="role_id" class="text-bold"
                                 >Nhóm quyền <span class="required">*</span></label
@@ -124,28 +100,34 @@
                                     />
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="name" class="text-bold">Chức danh </label>
-                            <div class="row border-group">
-                                <div class="col q-px-sm">
-                                    <div>
-                                        <label for="name" class="text-bold">Quản trị viên </label>
-                                        <q-toggle v-model="is_super_admin"/>
-                                    </div>
-                                </div>
-                                <div class="col q-px-sm">
-                                    <div>
-                                        <label for="name" class="text-bold">Trưởng phòng ban </label>
-                                        <q-toggle v-model="is_leader"/>
-                                    </div>
-                                </div>
+                          <div class="col q-px-sm">
+                            <div>
+                              <label for="name" class="text-bold">Trưởng Đơn vị </label>
+                              <q-toggle v-model="is_leader"/>
                             </div>
+                          </div>
                         </div>
+<!--                        <div class="form-group">-->
+<!--                            <label for="name" class="text-bold">Chức danh </label>-->
+<!--                            <div class="row border-group">-->
+<!--                                <div class="col q-px-sm">-->
+<!--                                    <div>-->
+<!--                                        <label for="name" class="text-bold">Quản trị viên </label>-->
+<!--                                        <q-toggle v-model="is_super_admin"/>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="col q-px-sm">-->
+<!--                                    <div>-->
+<!--                                        <label for="name" class="text-bold">Trưởng Đơn vị </label>-->
+<!--                                        <q-toggle v-model="is_leader"/>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
                         <div v-if="is_leader" class="form-group row q-gutter-md q-mt-sm">
                             <div class="col" style="max-height: 63px">
                                 <label for="name" class="text-bold"
-                                >Phòng ban<span class="required">*</span></label
+                                >Đơn vị<span class="required">*</span></label
                                 >
                                 <div>
                                     <q-select
@@ -242,7 +224,6 @@ export default defineComponent({
         const route = useRoute()
 
         const user: any = {
-            password: ref<string>(""),
             user_name: ref<string>(""),
             full_name: ref<string>(""),
             phone: ref<string>(""),
@@ -258,7 +239,6 @@ export default defineComponent({
         const departments = ref<IDepartmentResult[]>([]);
 
         const refInput: any = {
-            password: ref<any>(null),
             user_name: ref<any>(null),
             full_name: ref<any>(null),
             phone: ref<any>(null),
@@ -290,15 +270,11 @@ export default defineComponent({
                 (val: any) =>
                     (val && val.length > 0) || "Trường email không được bỏ trống!",
                 (val: string) =>
-                    VALIDATE_EMAIL_REGEX.test(val) || "Trường email thoại không hợp lệ!",
-            ],
-            password: [
-                (val: any) =>
-                    (val && val.length > 0) || "Trường mật khẩu không được bỏ trống!",
+                    (val.toString().includes('@5l8tj4.onmicrosoft.com')) || "Trường email không hợp lệ!",
             ],
             role_id: [(val: any) => val || "Trường nhóm quyền không được bỏ trống!"],
             department_id: [
-                (val: any) => val || "Trường phòng ban không được bỏ trống!",
+                (val: any) => val || "Trường Đơn vị không được bỏ trống!",
             ],
         };
 
@@ -306,7 +282,7 @@ export default defineComponent({
 
         const ruleSelect = (val: any) => {
             if (val === null) {
-                return "Trường phòng ban không được bỏ trống!";
+                return "Trường Đơn vị không được bỏ trống!";
             }
         };
 
@@ -372,7 +348,6 @@ export default defineComponent({
             const listInput: any = user.is_leader.value
                 ? {...refInput}
                 : {...refInput, department_id: null}
-            if (idUser.value) delete listInput.password
             for (nameInput in listInput) {
                 listInput[nameInput]?.value?.validate();
                 if (listInput[nameInput]?.value?.hasError) {

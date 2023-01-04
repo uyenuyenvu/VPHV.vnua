@@ -82,7 +82,7 @@
             <th class="text-center" width="5%">STT</th>
             <th class="text-left">Mã lớp</th>
             <th class="text-left">Tên lớp</th>
-            <th class="text-left">Phòng ban</th>
+            <th class="text-left">Đơn vị</th>
             <th class="text-left">Giáo viên</th>
             <th class="text-center">Ngày tạo</th>
             <th class="text-center">Tác vụ</th>
@@ -107,7 +107,7 @@
                     {{ getValueLodash(classItem, 'name', '') }}
                   </span>
               </td>
-              <td class="text-left"> {{ getValueLodash(classItem.department, 'name', 'Không có phòng ban') }}</td>
+              <td class="text-left"> {{ getValueLodash(classItem.department, 'name', 'Không có Đơn vị') }}</td>
               <td class="text-left"> {{ getValueLodash(classItem, 'teacher.full_name', 'Không có giáo viên') }}</td>
               <td class="text-center">{{ handleFormatDate(getValueLodash(classItem, 'created_at', '')) }}</td>
               <td class="text-center">
