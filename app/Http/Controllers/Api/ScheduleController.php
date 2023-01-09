@@ -60,7 +60,26 @@ class ScheduleController extends Controller
             ->groupBy(function($data) {
                 return Carbon::parse($data->start_time)->format('Y-m-d');
             });
-        return $this->responseSuccess(['schedules' => $schedules]);
+        $data = [];
+        if (!empty($request->input('user'))){
+            foreach ($schedules as $key=>$value){
+                $data[$key] = [];
+                foreach ($value as $schedule){
+                    if ((string)$schedule->leader_id === (string)$request->input('user')){
+                        $data[$key][]=$schedule;
+                    }else{
+                        foreach ($schedule->elements as $element){
+                            if ((string)$element->user_id === (string)$request->input('user')) {
+                                $data[$key][]=$schedule;
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            $data = $schedules;
+        }
+        return $this->responseSuccess(['schedules' => $data]);
     }
 
     public function store(Request $request): JsonResponse
@@ -143,7 +162,7 @@ class ScheduleController extends Controller
                             ->join('schedules', 'element_schedules.schedule_id','=','schedules.id')
                             ->where('element_schedules.user_id', $user->id)
                             ->orWhereBetween('schedules.start_time', [$request->input('start_time'), $request->input('end_time')])
-                            ->orWhereBetween('schedules.start_time', [$request->input('start_time'), $request->input('end_time')])
+                            ->orWhereBetween('schedules.end_time', [$request->input('start_time'), $request->input('end_time')])
                             ->get();
             if (count($schedule) > 0){
                 return $this->responseSuccess(['schedule' => false]);

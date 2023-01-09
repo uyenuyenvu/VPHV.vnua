@@ -129,6 +129,9 @@
       <div class="page-content-wrapper">
         <div class="page-content">
           <router-view/>
+          <div class="footer">
+            Copyright © 2022-2023 Uyenvt.vnua
+          </div>
         </div>
       </div>
     </q-page-container>
@@ -333,5 +336,12 @@ export default defineComponent({
         display: flex;
         align-items: center;
     }
+}
+.footer{
+  position: fixed;
+  bottom: 8px;
+  color: gray;
+  right: 30px;
+  font-style: italic;
 }
 </style>

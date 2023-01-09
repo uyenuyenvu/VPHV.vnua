@@ -2,15 +2,32 @@
   <div class="department-wrap">
     <div class="department-header">
       <div class="item-header">
+        <q-icon color="grey" name="fa-solid fa-chevron-left" style="margin-right: 10px; cursor: pointer" @click="preWeek()"/>
         <input type="date" name="start_time" v-model="searchDate"
                style="padding: 5px 10px;
-    border-radius: 5px;
-    border: 1px solid #609cdc;
-    outline: none;
-width: 200px;
-    text-align: center;
-    font-weight: bold;"
+                border-radius: 5px;
+                border: 1px solid #609cdc;
+                outline: none;
+                width: 200px;
+                text-align: center;
+                font-weight: bold;"
         >
+        <q-icon color="grey" name="fa-solid fa-chevron-right" style="margin-left: 10px; cursor: pointer" @click="nextWeek()"/>
+        <select name="" id="" v-model="user_search"
+                style="padding: 5px 10px;
+                border-radius: 5px;
+                border: 1px solid #609cdc;
+                outline: none;
+                width: 300px;
+                text-align: center;
+                font-weight: bold;
+                height: 35px;
+                 margin-left: 20px;
+"
+        >
+          <option value="">Tất cả lịch công tác</option>
+          <option :value="user.id" v-for="user in users">{{user.user_name}}</option>
+        </select>
       </div>
       <div class="item-header">
         <q-btn no-caps @click="redirectRouter('ScheduleCreate')" color="secondary" class="q-mr-sm" v-if="auth.full_name">
@@ -227,7 +244,9 @@ export default defineComponent({
     const visibleDialogConfirmCancel = ref<boolean>(false)
     const schedules = ref<IScheduleResult[]>([])
     const days = ref([]);
+    const users = ref<IUserResult[]>([]);
     const idScheduleHandle = ref('');
+    const user_search = ref('');
     const auth = store.getters["auth/getAuthUser"]
     const daysName = ref([
       'Thứ hai',
@@ -268,6 +287,7 @@ export default defineComponent({
       if (route.params?.id){
         payload.department_id = route.params?.id
       }
+      payload.user = user_search.value
 
       api.getScheduleAcademy<IPaginate<IUserResult[]>>(payload).then(res => {
         schedules.value = _.get(res, 'data.data.schedules')
@@ -328,6 +348,36 @@ export default defineComponent({
       }).finally(() => loadingRoles.value = false)
     }
 
+    const getListUser = (): void => {
+      const payload = {
+        page: 1,
+        limit: 100,
+      };
+      api
+          .getUsers<IPaginate<IUserResult[]>>(payload)
+          .then((res) => {
+            users.value = _.get(res, "data.data.users.data");
+          })
+          .catch(() => {
+            $q.notify({
+              icon: "report_problem",
+              message: "Không tải được danh sách user!",
+              color: "negative",
+              position: "top-right",
+            });
+          })
+          .finally(() => {
+          });
+    };
+    const nextWeek = (): void =>{
+      const today = new Date(searchDate.value);
+      searchDate.value = _.cloneDeep(moment(new Date(today.getTime()+ 7 * 24 * 60 * 60 * 1000)).format('YYYY-MM-DD'))
+    };
+    const preWeek = (): void =>{
+      const today = new Date(searchDate.value);
+      searchDate.value = _.cloneDeep(moment(new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)).format('YYYY-MM-DD'))
+    };
+
     onMounted((): void => {
       eventBus.$on('notify-success', (message: string) => {
         $q.notify({
@@ -339,8 +389,12 @@ export default defineComponent({
       })
       selectWeek()
       getListScheduleByWeek()
+      getListUser()
     })
     watch(route, () => {
+      getListScheduleByWeek()
+    })
+    watch(user_search, () => {
       getListScheduleByWeek()
     })
     watch(searchDate, (value) => {
@@ -352,6 +406,7 @@ export default defineComponent({
       }
         getListScheduleByWeek()
     })
+
     return {
       redirectRouter,
       loadingRoles,
@@ -360,6 +415,8 @@ export default defineComponent({
       route,
       daysName,
       formatDate,
+      users,
+      user_search,
       schedules,
       formatFullDate,
       formatTime,
@@ -371,7 +428,9 @@ export default defineComponent({
       handleAccept,
       handleCancel,
       idScheduleHandle,
-      confirmCancel
+      confirmCancel,
+      preWeek,
+      nextWeek
     }
   }
 })
@@ -390,7 +449,7 @@ export default defineComponent({
   border-color: #4684d594;
   background: white;
   border-radius: 10px;
-  height: calc(100vh - 175px);
+  height: calc(100vh - 200px);
   overflow: auto;
 
   &::-webkit-scrollbar {
